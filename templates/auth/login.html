@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Penora{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Penora
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Google Login Button -->
+                    <div class="d-grid mb-3">
+                        <a href="{{ url_for('auth.google_login') }}" class="btn btn-danger btn-lg">
+                            <i class="fab fa-google me-2"></i>Continue with Google
+                        </a>
+                    </div>
+                    
+                    <div class="text-center mb-3">
+                        <small class="text-muted">- OR -</small>
+                    </div>
+                    
+                    <!-- Email/Password Login Form -->
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-1"></i>Password
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">
+                                Remember me for 30 days
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Google OAuth Login -->
+                    {% if config.GOOGLE_OAUTH_CLIENT_ID and config.GOOGLE_OAUTH_CLIENT_SECRET %}
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{{ url_for('auth.google_login') }}" class="btn btn-danger">
+                            <i class="fab fa-google me-2"></i>Continue with Google
+                        </a>
+                        <small class="text-muted text-center">Or use email and password below</small>
+                    </div>
+                    {% else %}
+                    <div class="d-grid gap-2 mb-3">
+                        <button class="btn btn-secondary" disabled data-bs-toggle="tooltip" title="Google sign-in unavailable (contact support)">
+                            <i class="fab fa-google me-2"></i>Google Sign-in Unavailable
+                        </button>
+                        <small class="text-muted text-center">Use email and password below</small>
+                    </div>
+                    {% endif %}
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Don't have an account?</p>
+                        <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-success">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features Info -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h6 class="text-success">
+                        <i class="fas fa-gift me-2"></i>New Users Get 10 Free Credits!
+                    </h6>
+                    <small class="text-muted">
+                        Start generating amazing content right away with your welcome bonus.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

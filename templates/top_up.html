@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Top Up Credits - Penora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Current Balance -->
+        <div class="card mb-4 red-glow">
+            <div class="card-body text-center">
+                <h5 class="card-title">
+                    <i class="fas fa-wallet me-2 text-red"></i>
+                    Current Balance
+                </h5>
+                <h2 class="text-red mb-0">{{ current_user.credits }} Credits</h2>
+                <small class="text-muted">Available for text generation</small>
+            </div>
+        </div>
+        
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 mb-3">
+                <i class="fas fa-coins text-red me-3"></i>
+                Top Up Credits
+            </h1>
+            <p class="lead text-muted">Choose a credit package to continue creating amazing content</p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Smart Pricing:</strong> Calculated with 75% profit margin. Includes DeepInfra API costs.
+            </div>
+        </div>
+        
+        <!-- Credit Packages -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Choose a Credit Package
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-4">
+                        {% for package in packages %}
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card h-100 package-card red-glow" onclick="selectPackage('{{ package.id }}')">
+                                <div class="card-body text-center">
+                                    <div class="package-icon mb-3">
+                                        {% if package.credits <= 25 %}
+                                            <i class="fas fa-battery-quarter fa-3x text-red"></i>
+                                        {% elif package.credits <= 50 %}
+                                            <i class="fas fa-battery-half fa-3x text-red"></i>
+                                        {% elif package.credits <= 100 %}
+                                            <i class="fas fa-battery-three-quarters fa-3x text-red"></i>
+                                        {% else %}
+                                            <i class="fas fa-battery-full fa-3x text-red"></i>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <h5 class="card-title text-red">{{ package.name }}</h5>
+                                    
+                                    <div class="credits-amount mb-2">
+                                        <span class="h3 text-red">{{ package.credits }}</span>
+                                        <small class="text-muted">credits</small>
+                                    </div>
+                                    
+                                    <div class="price mb-3">
+                                        <span class="h4">${{ "%.2f"|format(package.price) }}</span>
+                                    </div>
+                                    
+                                    {% if package.discount > 0 %}
+                                    <div class="mb-3">
+                                        <span class="badge bg-success">{{ package.discount }}% OFF</span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="value-calc mb-3">
+                                        <small class="text-muted">
+                                            ${{ "%.3f"|format(package.price / package.credits) }} per credit
+                                        </small>
+                                    </div>
+                                    
+                                    <p class="text-muted small">{{ package.description }}</p>
+                                    
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="package_id" 
+                                               value="{{ package.id }}" id="package_{{ package.id }}" required>
+                                        <label class="form-check-label visually-hidden" for="package_{{ package.id }}">
+                                            Select {{ package.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg" id="purchaseBtn">
+                            <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+                        </button>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Secure Purchase | 256-bit SSL Encryption
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Back to Dashboard -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function selectPackage(packageId) {
+    // Clear all previous selections
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('border-primary', 'bg-light');
+    });
+    document.querySelectorAll('input[name="package_id"]').forEach(input => {
+        input.checked = false;
+    });
+    
+    // Select the clicked package
+    const selectedCard = document.querySelector(`#package_${packageId}`).closest('.package-card');
+    selectedCard.classList.add('border-primary', 'bg-light');
+    document.querySelector(`#package_${packageId}`).checked = true;
+    
+    // Enable purchase button
+    document.getElementById('purchaseBtn').disabled = false;
+}
+
+// Disable purchase button initially
+document.getElementById('purchaseBtn').disabled = true;
+
+// Add click event to all package cards
+document.querySelectorAll('.package-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('mouseenter', function() {
+        if (!this.classList.contains('border-primary')) {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        }
+    });
+    card.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('border-primary')) {
+            this.style.transform = 'translateY(0)';
+        }
+    });
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const selectedPackage = document.querySelector('input[name="package_id"]:checked');
+    if (!selectedPackage) {
+        e.preventDefault();
+        alert('Please select a credit package');
+        return false;
+    }
+});
+</script>
+{% endblock %}

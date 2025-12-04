@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Buy Credits - Penora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Current Balance -->
+        <div class="card mb-4 border-info">
+            <div class="card-body text-center">
+                <h5 class="card-title">
+                    <i class="fas fa-wallet me-2 text-info"></i>
+                    Current Balance
+                </h5>
+                <h2 class="text-info mb-0">{{ current_user.credits }} Credits</h2>
+                <small class="text-muted">Available for text generation</small>
+            </div>
+        </div>
+        
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 mb-3">
+                <i class="fas fa-coins text-info me-3"></i>
+                Buy Credits
+            </h1>
+            <p class="lead text-muted">Choose a credit package to continue creating amazing content</p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Smart Pricing:</strong> Calculated with 75% profit margin. Includes DeepInfra API costs.
+            </div>
+        </div>
+        
+        <!-- Credit Packages -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Choose a Credit Package
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    {% for package in packages %}
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card h-100 package-card border-info" onclick="selectPackage('{{ package.id }}')">
+                            <div class="card-body text-center">
+                                <div class="package-icon mb-3">
+                                    {% if package.credits <= 25 %}
+                                        <i class="fas fa-battery-quarter fa-3x text-info"></i>
+                                    {% elif package.credits <= 50 %}
+                                        <i class="fas fa-battery-half fa-3x text-info"></i>
+                                    {% elif package.credits <= 100 %}
+                                        <i class="fas fa-battery-three-quarters fa-3x text-info"></i>
+                                    {% else %}
+                                        <i class="fas fa-battery-full fa-3x text-info"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                <h5 class="card-title text-info">{{ package.name }}</h5>
+                                
+                                <div class="credits-amount mb-2">
+                                    <span class="h3 text-info">{{ package.credits }}</span>
+                                    <small class="text-muted">credits</small>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h4">₹{{ package.price }}</span>
+                                </div>
+                                
+                                {% if package.discount > 0 %}
+                                <div class="mb-3">
+                                    <span class="badge bg-success">{{ package.discount }}% OFF</span>
+                                </div>
+                                {% endif %}
+                                
+                                <button type="button" class="btn btn-info w-100" 
+                                        onclick="purchaseCredits('{{ package.id }}', '{{ package.name }}', {{ package.price }}, {{ package.credits }})">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    Buy Now
+                                </button>
+                                
+                                <small class="text-muted mt-2 d-block">
+                                    ₹{{ "%.1f"|format(package.price / package.credits) }} per credit
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Info -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                    Secure Payment Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-credit-card me-2 text-primary"></i>Simple Purchase</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Secure checkout process</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Instant credit delivery</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Simple one-click purchase</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-question-circle me-2 text-info"></i>How It Works</h6>
+                        <ol class="list-unstyled">
+                            <li><i class="fas fa-arrow-right text-muted me-2"></i>Choose your package</li>
+                            <li><i class="fas fa-arrow-right text-muted me-2"></i>Complete secure purchase</li>
+                            <li><i class="fas fa-arrow-right text-muted me-2"></i>Credits added instantly</li>
+                            <li><i class="fas fa-arrow-right text-muted me-2"></i>Start creating content!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Purchase Modal -->
+<div class="modal fade" id="purchaseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Confirm Purchase
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="package-icon mb-3">
+                        <i class="fas fa-coins fa-3x text-info"></i>
+                    </div>
+                    <h5 id="modalPackageName">Package Name</h5>
+                    <p class="text-muted">
+                        <span id="modalCredits">0</span> credits for 
+                        <strong>₹<span id="modalPrice">0</span></strong>
+                    </p>
+                    <p class="small text-muted">
+                        You will be redirected to Razorpay for secure payment processing.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{{ url_for('credits.purchase') }}" id="purchaseForm">
+                    <input type="hidden" name="package_id" id="selectedPackageId">
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Pay with Razorpay
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Package selection functionality
+function selectPackage(packageId) {
+    // Visual feedback for selected package
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('border-primary', 'bg-light');
+    });
+    event.currentTarget.classList.add('border-primary', 'bg-light');
+}
+
+// Purchase modal functionality
+function purchaseCredits(packageId, packageName, price, credits) {
+    document.getElementById('modalPackageName').textContent = packageName;
+    document.getElementById('modalCredits').textContent = credits;
+    document.getElementById('modalPrice').textContent = price;
+    document.getElementById('selectedPackageId').value = packageId;
+    
+    new bootstrap.Modal(document.getElementById('purchaseModal')).show();
+}
+
+// Enhanced package card styling
+document.addEventListener('DOMContentLoaded', function() {
+    const packageCards = document.querySelectorAll('.package-card');
+    
+    packageCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.style.transition = 'all 0.3s ease';
+        
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 4px 20px rgba(0,123,255,0.3)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '';
+        });
+    });
+});
+</script>
+
+<style>
+.package-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.package-card:hover {
+    border-color: var(--bs-info);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,123,255,0.2);
+}
+
+.package-icon {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.credits-amount {
+    font-weight: bold;
+}
+
+.price {
+    color: var(--bs-success);
+    font-weight: bold;
+}
+</style>
+{% endblock %}

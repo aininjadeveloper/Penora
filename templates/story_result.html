@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}{{ story_title }} - Penora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Story Header -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-book me-2"></i>{{ story_title }}
+                    </h4>
+                    <div>
+                        {% if generation_id %}
+                        <a href="{{ url_for('download_pdf', generation_id=generation_id) }}" 
+                           class="btn btn-light btn-sm">
+                            <i class="fas fa-download me-2"></i>Download PDF
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="fas fa-list-ol me-1"></i>
+                            {{ chapters|length }} Chapter{{ 's' if chapters|length > 1 else '' }}
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <small class="text-muted">
+                            <i class="fas fa-coins me-1"></i>
+                            {{ chapters|length }} Credit{{ 's' if chapters|length > 1 else '' }} Used
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Story Chapters -->
+        {% for chapter in chapters %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bookmark me-2 text-primary"></i>
+                    Chapter {{ loop.index }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="story-chapter">
+                    {{ chapter|replace('\n', '<br>')|safe }}
+                </div>
+                
+                {% if not loop.last %}
+                <hr class="my-4">
+                <div class="text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-chevron-down me-1"></i>
+                        Continue to Chapter {{ loop.index + 1 }}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- Export Options -->
+        <div class="card red-glow">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-download me-2"></i>Export Your Story
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">Save your story in your preferred format:</p>
+                
+                {% if generation_id %}
+                <div class="row g-3">
+                    <!-- PDF Export -->
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('export_generation', generation_id=generation_id, format='pdf') }}" 
+                           class="btn btn-outline-danger w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-file-pdf fa-2x mb-2 text-danger"></i>
+                            <strong>PDF</strong>
+                            <small class="text-muted">Portable Document</small>
+                        </a>
+                    </div>
+                    
+                    <!-- DOC Export -->
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('export_generation', generation_id=generation_id, format='doc') }}" 
+                           class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-file-word fa-2x mb-2 text-primary"></i>
+                            <strong>Word Doc</strong>
+                            <small class="text-muted">Microsoft Word</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Text Export -->
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('export_generation', generation_id=generation_id, format='txt') }}" 
+                           class="btn btn-outline-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fas fa-file-alt fa-2x mb-2 text-secondary"></i>
+                            <strong>Text File</strong>
+                            <small class="text-muted">Plain Text (.txt)</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Google Drive -->
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('export_generation', generation_id=generation_id, format='gdrive') }}" 
+                           class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fab fa-google-drive fa-2x mb-2 text-success"></i>
+                            <strong>Google Drive</strong>
+                            <small class="text-muted">Coming Soon</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Dropbox -->
+                    <div class="col-md-6 col-lg-4">
+                        <a href="{{ url_for('export_generation', generation_id=generation_id, format='dropbox') }}" 
+                           class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3">
+                            <i class="fab fa-dropbox fa-2x mb-2 text-info"></i>
+                            <strong>Dropbox</strong>
+                            <small class="text-muted">Coming Soon</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Copy to Clipboard -->
+                    <div class="col-md-6 col-lg-4">
+                        <button class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3" 
+                                onclick="copyStoryToClipboard()">
+                            <i class="fas fa-copy fa-2x mb-2 text-warning"></i>
+                            <strong>Clipboard</strong>
+                            <small class="text-muted">Copy Text</small>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Story Navigation -->
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="mb-3">What would you like to do next?</h6>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{{ url_for('story_generator') }}" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-2"></i>Generate Another Story
+                    </a>
+                    
+                    <a href="{{ url_for('account') }}" class="btn btn-outline-info">
+                        <i class="fas fa-history me-2"></i>View All Stories
+                    </a>
+                    
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyStoryToClipboard() {
+    let storyText = "{{ story_title }}\n\n";
+    
+    {% for chapter in chapters %}
+    storyText += "Chapter {{ loop.index }}\n\n";
+    storyText += `{{ chapter|replace('\n', '\\n')|replace('"', '\\"')|safe }}`;
+    storyText += "\n\n";
+    {% endfor %}
+    
+    navigator.clipboard.writeText(storyText).then(() => {
+        // Show success feedback
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+        btn.classList.remove('btn-outline-secondary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        alert('Failed to copy story to clipboard');
+    });
+}
+
+// Smooth scrolling for chapter navigation
+document.addEventListener('DOMContentLoaded', function() {
+    const chapters = document.querySelectorAll('.card');
+    chapters.forEach((chapter, index) => {
+        if (index > 0) { // Skip the header card
+            chapter.style.scrollMarginTop = '20px';
+        }
+    });
+});
+</script>
+{% endblock %}

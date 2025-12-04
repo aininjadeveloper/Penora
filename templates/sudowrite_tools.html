@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Writing Tools - Penora{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Sidebar: Project Navigation -->
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-folder-open me-2"></i>Workspace
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">Credits: {{ credits }}</small>
+                    </div>
+                    
+                    {% if workspace_projects %}
+                        <h6 class="text-muted mb-2">Recent Projects</h6>
+                        {% for project in workspace_projects[:5] %}
+                        <div class="mb-2">
+                            <a href="#" class="text-decoration-none" onclick="loadProject('{{ project.code }}')">
+                                <small>{{ project.project_title[:25] }}...</small>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <small class="text-muted">No projects yet</small>
+                    {% endif %}
+                    
+                    <hr class="my-3">
+                    <a href="{{ url_for('start_writing') }}" class="btn btn-sm btn-outline-secondary w-100">
+                        <i class="fas fa-plus me-1"></i>New Project
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Center: Writing Tools -->
+        <div class="col-md-6">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tools me-2"></i>Writing Tools
+                    </h5>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Write Tool -->
+                    <div class="tool-section mb-4">
+                        <h6 class="text-warning">
+                            <i class="fas fa-pen-fancy me-2"></i>Write Tool
+                        </h6>
+                        <form method="POST" action="{{ url_for('sudowrite_write') }}">
+                            <div class="mb-3">
+                                <textarea class="form-control bg-secondary text-white" name="main_text" rows="4" 
+                                          placeholder="Start writing your text..."></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-select bg-secondary text-white" name="mode">
+                                        <option value="auto">Auto Continue</option>
+                                        <option value="ominous">Ominous Tone</option>
+                                        <option value="romantic">Romantic Tone</option>
+                                        <option value="mysterious">Mysterious</option>
+                                        <option value="action">Action-Packed</option>
+                                        <option value="dialogue">Focus on Dialogue</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select bg-secondary text-white" name="variants">
+                                        <option value="1">1 Variant</option>
+                                        <option value="2">2 Variants</option>
+                                        <option value="3" selected>3 Variants</option>
+                                        <option value="4">4 Variants</option>
+                                        <option value="5">5 Variants</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-warning w-100">
+                                        <i class="fas fa-magic me-1"></i>Write
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="temperature" value="0.7">
+                        </form>
+                    </div>
+                    
+                    <!-- Rewrite Tool -->
+                    <div class="tool-section mb-4">
+                        <h6 class="text-info">
+                            <i class="fas fa-edit me-2"></i>Rewrite Tool
+                        </h6>
+                        <form method="POST" action="{{ url_for('sudowrite_rewrite') }}">
+                            <div class="mb-3">
+                                <textarea class="form-control bg-secondary text-white" name="selected_text" rows="3" 
+                                          placeholder="Paste text to rewrite..."></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <select class="form-select bg-secondary text-white" name="rewrite_type">
+                                        <option value="improve">General Improvement</option>
+                                        <option value="show_dont_tell">Show Don't Tell</option>
+                                        <option value="expand">Expand with Detail</option>
+                                        <option value="shorten">Make Concise</option>
+                                        <option value="formal">More Formal</option>
+                                        <option value="casual">More Casual</option>
+                                        <option value="dramatic">More Dramatic</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-info w-100">
+                                        <i class="fas fa-sync me-1"></i>Rewrite
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Describe Tool -->
+                    <div class="tool-section mb-4">
+                        <h6 class="text-success">
+                            <i class="fas fa-eye me-2"></i>Describe Tool
+                        </h6>
+                        <form method="POST" action="{{ url_for('sudowrite_describe') }}">
+                            <div class="mb-3">
+                                <textarea class="form-control bg-secondary text-white" name="selected_text" rows="3" 
+                                          placeholder="Text to enhance with descriptions..."></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <select class="form-select bg-secondary text-white" name="sense_focus">
+                                        <option value="all">All Senses</option>
+                                        <option value="sight">Visual Details</option>
+                                        <option value="sound">Sounds & Audio</option>
+                                        <option value="smell">Scents & Smells</option>
+                                        <option value="taste">Taste Details</option>
+                                        <option value="touch">Touch & Texture</option>
+                                        <option value="emotion">Emotional Depth</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-plus-circle me-1"></i>Describe
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Brainstorm Tool -->
+                    <div class="tool-section mb-4">
+                        <h6 class="text-purple">
+                            <i class="fas fa-lightbulb me-2"></i>Brainstorm Tool
+                        </h6>
+                        <form method="POST" action="{{ url_for('sudowrite_brainstorm') }}">
+                            <div class="mb-3">
+                                <input type="text" class="form-control bg-secondary text-white" name="context" 
+                                       placeholder="Context for brainstorming (optional)...">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <select class="form-select bg-secondary text-white" name="category">
+                                        <option value="plot_ideas">Plot Ideas</option>
+                                        <option value="character_names">Character Names</option>
+                                        <option value="locations">Locations</option>
+                                        <option value="objects">Important Objects</option>
+                                        <option value="conflicts">Conflicts</option>
+                                        <option value="dialogue">Dialogue Starters</option>
+                                        <option value="world_building">World Building</option>
+                                        <option value="titles">Story Titles</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select bg-secondary text-white" name="count">
+                                        <option value="5">5 Ideas</option>
+                                        <option value="10" selected>10 Ideas</option>
+                                        <option value="15">15 Ideas</option>
+                                        <option value="20">20 Ideas</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-outline-light w-100">
+                                        <i class="fas fa-brain me-1"></i>Brainstorm
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar: Results & History -->
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Results
+                    </h6>
+                </div>
+                <div class="card-body" id="results-panel">
+                    
+                    {% if results %}
+                        {% for result in results %}
+                        <div class="result-card mb-3 p-3 bg-secondary rounded">
+                            <div class="d-flex justify-content-between mb-2">
+                                <small class="text-muted">{{ result.type|title }} Tool</small>
+                                <small class="text-muted">{{ result.model_used }}</small>
+                            </div>
+                            
+                            <div class="result-content mb-2" style="max-height: 150px; overflow-y: auto;">
+                                {% if result.type == 'brainstorm' %}
+                                    <ul class="list-unstyled mb-0">
+                                        {% for item in result.content[:5] %}
+                                        <li class="small">• {{ item }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <small>{{ result.content[:200] }}...</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-light" onclick="insertResult('{{ result.content|e }}')">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="starResult(this)">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" onclick="copyResult('{{ result.content|e }}')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-tools fa-2x mb-2"></i>
+                            <p class="small">Use the writing tools to generate content. Results will appear here.</p>
+                        </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function insertResult(content) {
+    // Find the active textarea and insert content
+    const activeTextarea = document.querySelector('textarea:focus');
+    if (activeTextarea) {
+        const start = activeTextarea.selectionStart;
+        const end = activeTextarea.selectionEnd;
+        const value = activeTextarea.value;
+        activeTextarea.value = value.substring(0, start) + content + value.substring(end);
+        activeTextarea.focus();
+    } else {
+        // If no active textarea, copy to clipboard
+        navigator.clipboard.writeText(content);
+        alert('Content copied to clipboard!');
+    }
+}
+
+function starResult(button) {
+    button.classList.toggle('btn-outline-warning');
+    button.classList.toggle('btn-warning');
+    const icon = button.querySelector('i');
+    icon.classList.toggle('fas');
+    icon.classList.toggle('far');
+}
+
+function copyResult(content) {
+    navigator.clipboard.writeText(content).then(() => {
+        // Show temporary success feedback
+        const originalText = event.target.innerHTML;
+        event.target.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+            event.target.innerHTML = originalText;
+        }, 1000);
+    });
+}
+
+function loadProject(projectCode) {
+    // Placeholder for loading project content
+    console.log('Loading project:', projectCode);
+}
+</script>
+
+<style>
+.text-purple {
+    color: #9d4edd !important;
+}
+
+.tool-section {
+    border-bottom: 1px solid #495057;
+    padding-bottom: 1rem;
+}
+
+.tool-section:last-child {
+    border-bottom: none;
+}
+
+.result-card {
+    border: 1px solid #495057;
+    transition: all 0.2s ease;
+}
+
+.result-card:hover {
+    border-color: #6c757d;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

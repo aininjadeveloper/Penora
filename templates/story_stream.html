@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Generating Story - Penora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Story Header -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-magic me-2"></i>{{ story_title }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="fas fa-list-ol me-1"></i>
+                            <span id="chapterCount">0</span> of {{ total_chapters }} Chapters Generated
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <small class="text-muted">
+                            <i class="fas fa-coins me-1"></i>
+                            <span id="creditsUsed">0</span> Credits Used
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress mt-3" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%" id="overallProgress">
+                        <span class="fw-bold">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Current Generation Status -->
+        <div class="card mb-4" id="currentStatus">
+            <div class="card-body text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 id="statusText">Generating Chapter 1...</h5>
+                <p class="text-muted">This may take 30-60 seconds per chapter. Please stay on this page.</p>
+            </div>
+        </div>
+        
+        <!-- Generated Chapters Container -->
+        <div id="chaptersContainer"></div>
+        
+        <!-- Final Actions (Hidden initially) -->
+        <div class="card" id="finalActions" style="display: none;">
+            <div class="card-body text-center">
+                <h5 class="text-success mb-3">
+                    <i class="fas fa-check-circle me-2"></i>Story Complete!
+                </h5>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="#" id="downloadPdfBtn" class="btn btn-primary" style="display: none;">
+                        <i class="fas fa-download me-2"></i>Download as PDF
+                    </a>
+                    
+                    <button class="btn btn-outline-secondary" onclick="copyFullStory()">
+                        <i class="fas fa-copy me-2"></i>Copy Full Story
+                    </button>
+                    
+                    <a href="{{ url_for('story_generator') }}" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-2"></i>Generate Another Story
+                    </a>
+                    
+                    <a href="{{ url_for('account') }}" class="btn btn-outline-info">
+                        <i class="fas fa-history me-2"></i>View All Stories
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<div id="hiddenData" style="display: none;">
+    <span id="storyPrompt">{{ story_prompt }}</span>
+    <span id="totalChapters">{{ total_chapters }}</span>
+    <span id="userId">{{ current_user.id }}</span>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentChapter = 1;
+let totalChapters = parseInt(document.getElementById('totalChapters').textContent);
+let storyPrompt = document.getElementById('storyPrompt').textContent;
+let generatedChapters = [];
+let creditsUsed = 0;
+
+function updateProgress() {
+    const progress = Math.round((currentChapter - 1) / totalChapters * 100);
+    const progressBar = document.getElementById('overallProgress');
+    progressBar.style.width = progress + '%';
+    progressBar.querySelector('span').textContent = progress + '%';
+    
+    document.getElementById('chapterCount').textContent = currentChapter - 1;
+    document.getElementById('creditsUsed').textContent = creditsUsed;
+}
+
+function addChapterToDisplay(chapterNumber, content) {
+    const container = document.getElementById('chaptersContainer');
+    
+    const chapterDiv = document.createElement('div');
+    chapterDiv.className = 'card mb-4';
+    chapterDiv.innerHTML = `
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-bookmark me-2 text-primary"></i>
+                Chapter ${chapterNumber}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="story-chapter">
+                ${content.replace(/\n/g, '<br>')}
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(chapterDiv);
+    
+    // Scroll to the new chapter
+    chapterDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function generateNextChapter() {
+    if (currentChapter > totalChapters) {
+        // All chapters complete
+        document.getElementById('currentStatus').style.display = 'none';
+        document.getElementById('finalActions').style.display = 'block';
+        updateProgress();
+        return;
+    }
+    
+    // Update status
+    document.getElementById('statusText').textContent = `Generating Chapter ${currentChapter}...`;
+    
+    // Create chapter prompt
+    let chapterPrompt;
+    if (currentChapter === 1) {
+        chapterPrompt = `Write Chapter 1 of a ${totalChapters}-chapter story about: ${storyPrompt}. Start the story with an engaging opening. Make it around 600-800 words.`;
+    } else if (currentChapter === totalChapters) {
+        chapterPrompt = `Write the final Chapter ${currentChapter} of the story about: ${storyPrompt}. Provide a satisfying conclusion. Make it around 600-800 words.`;
+    } else {
+        chapterPrompt = `Write Chapter ${currentChapter} of the story about: ${storyPrompt}. Continue the story and advance the plot. Make it around 600-800 words.`;
+    }
+    
+    // Make AJAX request to generate chapter
+    fetch('/generate-chapter', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            prompt: chapterPrompt,
+            chapter_number: currentChapter
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Add chapter to display
+            addChapterToDisplay(currentChapter, data.content);
+            generatedChapters.push(data.content);
+            creditsUsed++;
+            currentChapter++;
+            updateProgress();
+            
+            // Generate next chapter after a short delay
+            setTimeout(generateNextChapter, 1000);
+        } else {
+            // Handle error
+            document.getElementById('statusText').textContent = `Error generating Chapter ${currentChapter}: ${data.error}`;
+            document.querySelector('.spinner-border').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('statusText').textContent = `Network error generating Chapter ${currentChapter}`;
+        document.querySelector('.spinner-border').style.display = 'none';
+    });
+}
+
+function copyFullStory() {
+    let fullText = `{{ story_title }}\n\n`;
+    generatedChapters.forEach((chapter, index) => {
+        fullText += `Chapter ${index + 1}\n\n${chapter}\n\n`;
+    });
+    
+    navigator.clipboard.writeText(fullText).then(() => {
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Copied!';
+        btn.classList.remove('btn-outline-secondary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(err => {
+        alert('Failed to copy story to clipboard');
+    });
+}
+
+// Start generating when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    generateNextChapter();
+});
+</script>
+{% endblock %}

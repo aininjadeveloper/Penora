@@ -1,0 +1,335 @@
+/* Black and Red Theme for Penora */
+
+:root {
+    --primary-color: #dc2626; /* Red */
+    --secondary-color: #991b1b; /* Dark Red */
+    --accent-color: #ef4444; /* Light Red */
+    --background-color: #000000; /* Black */
+    --surface-color: #1a1a1a; /* Dark Gray */
+    --surface-light: #2d2d2d; /* Light Gray */
+    --text-primary: #ffffff; /* White */
+    --text-secondary: #cccccc; /* Light Gray */
+    --text-muted: #999999; /* Muted Gray */
+    --border-color: #333333; /* Dark Border */
+    --hover-color: #b91c1c; /* Darker Red */
+}
+
+/* Global Styles */
+body {
+    background-color: var(--background-color) !important;
+    color: var(--text-primary) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Override Bootstrap Primary Colors */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--hover-color) !important;
+    border-color: var(--hover-color) !important;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.btn-success {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-success:hover {
+    background-color: var(--hover-color) !important;
+    border-color: var(--hover-color) !important;
+}
+
+/* Cards */
+.card {
+    background-color: var(--surface-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.card-header {
+    background-color: var(--surface-light) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.card-header.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.card.border-primary {
+    border-color: var(--primary-color) !important;
+}
+
+.card.bg-light {
+    background-color: var(--surface-light) !important;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--surface-color) !important;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.navbar-brand {
+    color: var(--primary-color) !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-secondary) !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+.navbar-toggler {
+    border-color: var(--primary-color) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28220, 38, 38, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Form Controls */
+.form-control {
+    background-color: var(--surface-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-control:focus {
+    background-color: var(--surface-color) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-select {
+    background-color: var(--surface-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25) !important;
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Alerts */
+.alert-success {
+    background-color: rgba(220, 38, 38, 0.1) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    border-color: var(--accent-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.alert-warning {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    border-color: #f59e0b !important;
+    color: var(--text-primary) !important;
+}
+
+.alert-info {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: #3b82f6 !important;
+    color: var(--text-primary) !important;
+}
+
+/* Progress Bars */
+.progress {
+    background-color: var(--surface-light) !important;
+}
+
+.progress-bar {
+    background-color: var(--primary-color) !important;
+}
+
+.progress-bar.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+/* Badges */
+.badge.bg-info {
+    background-color: var(--primary-color) !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--primary-color) !important;
+}
+
+/* Tables */
+.table {
+    color: var(--text-primary) !important;
+}
+
+.table-dark {
+    background-color: var(--surface-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.table-dark th,
+.table-dark td {
+    border-color: var(--border-color) !important;
+}
+
+/* Borders */
+.border-primary {
+    border-color: var(--primary-color) !important;
+}
+
+/* Spinner */
+.spinner-border.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Footer */
+.bg-dark {
+    background-color: var(--surface-color) !important;
+}
+
+/* Links */
+a {
+    color: var(--primary-color) !important;
+}
+
+a:hover {
+    color: var(--accent-color) !important;
+}
+
+/* Custom Classes */
+.bg-black {
+    background-color: var(--background-color) !important;
+}
+
+.bg-surface {
+    background-color: var(--surface-color) !important;
+}
+
+.text-red {
+    color: var(--primary-color) !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--background-color) 0%, var(--surface-color) 100%);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+/* Animation for Red Glow Effect */
+.red-glow {
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+    transition: box-shadow 0.3s ease;
+}
+
+.red-glow:hover {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+}
+
+/* Story Content Styling */
+.story-chapter {
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.story-chapter p {
+    margin-bottom: 1.5rem;
+}
+
+/* Button Groups */
+.btn-group .btn {
+    border-color: var(--border-color) !important;
+}
+
+/* Input Groups */
+.input-group-text {
+    background-color: var(--surface-light) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    background-color: var(--surface-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.dropdown-item {
+    color: var(--text-primary) !important;
+}
+
+.dropdown-item:hover {
+    background-color: var(--surface-light) !important;
+    color: var(--primary-color) !important;
+}
+
+/* Modal */
+.modal-content {
+    background-color: var(--surface-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color) !important;
+}
+
+.modal-footer {
+    border-top-color: var(--border-color) !important;
+}
+
+/* Pagination */
+.page-link {
+    background-color: var(--surface-color) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.page-link:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}

@@ -1,0 +1,682 @@
+{% extends "base.html" %}
+
+{% block title %}Buy Ku Coins - Penora{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-4">
+                    <i class="fas fa-coins text-warning me-3"></i>Buy Ku Coins
+                </h1>
+                <p class="lead text-muted">Choose your perfect plan to unlock unlimited creative potential!</p>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Ku Coin System:</strong> 1 Ku coin = 1 page (~500 words) OR 0.5 image (2 Ku = 1 image)
+                </div>
+                
+                <!-- Plan Type Toggle -->
+                <div class="mb-4">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" id="monthlyBtn" onclick="togglePlanType('monthly')">
+                            <i class="fas fa-calendar-alt me-1"></i>Monthly
+                        </button>
+                        <button type="button" class="btn btn-outline-success" id="yearlyBtn" onclick="togglePlanType('yearly')">
+                            <i class="fas fa-calendar-check me-1"></i>Yearly
+                            <span class="badge bg-success ms-1">50% OFF</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Top Up Button -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8">
+                    <div class="text-center">
+                        <button class="btn btn-warning btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#topUpSection" aria-expanded="false" aria-controls="topUpSection">
+                            <i class="fas fa-bolt me-2"></i>Quick Top Up
+                            <small class="ms-2">Need instant Ku coins?</small>
+                        </button>
+                    </div>
+                    
+                    <!-- Collapsible Top Up Options -->
+                    <div class="collapse mt-3" id="topUpSection">
+                        <div class="card border-warning">
+                            <div class="card-header bg-warning text-dark text-center py-2">
+                                <h6 class="mb-0">Choose Your Top Up Amount</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <!-- 10 Ku Coins Package -->
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-light shadow-sm">
+                                            <div class="card-body text-center p-3">
+                                                <div class="mb-2">
+                                                    <i class="fas fa-coins fa-2x text-warning"></i>
+                                                </div>
+                                                <h6 class="card-title fw-bold">10 Ku Coins</h6>
+                                                
+                                                <div class="price mb-2">
+                                                    <span class="h4 text-success fw-bold">$1</span>
+                                                </div>
+                                                
+                                                <div class="estimated-usage mb-3 p-2 bg-light rounded">
+                                                    <small class="text-muted">~5,000 words + ~5 images</small>
+                                                </div>
+                                                
+                                                <div class="features mb-3">
+                                                    <ul class="list-unstyled small text-muted">
+                                                        <li><i class="fas fa-check text-success me-1"></i>Perfect for quick content</li>
+                                                        <li><i class="fas fa-check text-success me-1"></i>Instant delivery</li>
+                                                        <li><i class="fas fa-check text-success me-1"></i>Try our AI models</li>
+                                                    </ul>
+                                                </div>
+                                                
+                                                <button class="btn btn-outline-warning btn-sm w-100" 
+                                                        onclick="initializePayment('topup_10', '10 Ku Coins', 100, 10)">
+                                                    <i class="fas fa-shopping-cart me-1"></i>Buy Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 25 Ku Coins Package (Most Popular) -->
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-warning bg-warning bg-opacity-10 shadow-sm">
+                                            <div class="card-header bg-warning text-dark text-center py-2">
+                                                <small><i class="fas fa-star me-1"></i>Most Popular</small>
+                                            </div>
+                                            <div class="card-body text-center p-3">
+                                                <div class="mb-2">
+                                                    <i class="fas fa-coins fa-2x text-warning"></i>
+                                                </div>
+                                                <h6 class="card-title fw-bold">25 Ku Coins</h6>
+                                                
+                                                <div class="price mb-2">
+                                                    <span class="h4 text-success fw-bold">$3</span>
+                                                </div>
+                                                
+                                                <div class="estimated-usage mb-3 p-2 bg-light rounded">
+                                                    <small class="text-muted">~12,500 words + ~12 images</small>
+                                                </div>
+                                                
+                                                <div class="features mb-3">
+                                                    <ul class="list-unstyled small text-muted">
+                                                        <li><i class="fas fa-check text-success me-1"></i>Great for small projects</li>
+                                                        <li><i class="fas fa-check text-success me-1"></i>Multiple articles</li>
+                                                        <li><i class="fas fa-check text-success me-1"></i>Best value for testing</li>
+                                                    </ul>
+                                                </div>
+                                                
+                                                <button class="btn btn-warning btn-sm w-100" 
+                                                        onclick="initializePayment('topup_25', '25 Ku Coins', 300, 25)">
+                                                    <i class="fas fa-shopping-cart me-1"></i>Buy Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 50 Ku Coins Package -->
+                                    <div class="col-md-4">
+                                        <div class="card h-100 border-light shadow-sm">
+                                            <div class="card-body text-center p-3">
+                                                <div class="mb-2">
+                                                    <i class="fas fa-coins fa-2x text-warning"></i>
+                                                </div>
+                                                <h6 class="card-title fw-bold">50 Ku Coins</h6>
+                                                
+                                                <div class="price mb-2">
+                                                    <span class="h4 text-success fw-bold">$5</span>
+                                                </div>
+                                                
+                                                <div class="estimated-usage mb-3 p-2 bg-light rounded">
+                                                    <small class="text-muted">~25,000 words + ~25 images</small>
+                                                </div>
+                                                
+                                                <div class="features mb-3">
+                                                    <ul class="list-unstyled small text-muted">
+                                                        <li><i class="fas fa-check text-success me-1"></i>Full project content</li>
+                                                        <li><i class="fas fa-check text-success me-1"></i>Multiple chapters</li>
+                                                        <li><i class="fas fa-check text-success me-1"></i>Extended creative work</li>
+                                                    </ul>
+                                                </div>
+                                                
+                                                <button class="btn btn-outline-warning btn-sm w-100" 
+                                                        onclick="initializePayment('topup_50', '50 Ku Coins', 500, 50)">
+                                                    <i class="fas fa-shopping-cart me-1"></i>Buy Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Subscription Plans Header -->
+            <div class="text-center mb-4">
+                <h2 class="h3"><i class="fas fa-calendar-alt me-2"></i>Subscription Plans</h2>
+                <p class="text-muted">For regular content creators with consistent needs</p>
+            </div>
+            
+            <!-- Ku Coin Plans -->
+            <div class="row justify-content-center g-4 mb-5" id="planContainer">
+                <!-- Monthly Plans -->
+                <div class="plan-group" id="monthlyPlans">
+                  <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="plan-icon mb-3">
+                                    <i class="fas fa-seedling fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Lite</h5>
+                                
+                                <div class="ku-coins-amount mb-3">
+                                    <span class="h2 text-primary fw-bold">500</span>
+                                    <div><small class="text-muted">Ku coins / month</small></div>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h3 text-dark fw-bold">$20</span>
+                                    <div><small class="text-muted">per month</small></div>
+                                </div>
+                                
+                                <div class="estimated-usage mb-3 p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <small class="text-success fw-semibold">
+                                            <i class="fas fa-pen me-1"></i>~250,000 words/month
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <small class="text-info fw-semibold">
+                                            <i class="fas fa-image me-1"></i>~250 images/month
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="features mb-4">
+                                    <ul class="list-unstyled text-muted small">
+                                        <li><i class="fas fa-check text-success me-2"></i>1 MB Storage</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Standard Support</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>New writers & casual users</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn btn-outline-primary btn-lg w-100" onclick="initializePayment('lite_monthly', 'Lite Monthly', 2000, 500)">
+                                    <i class="fas fa-shopping-cart me-2"></i>Choose Lite
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 border-primary shadow">
+                            <div class="card-header bg-primary text-white text-center py-3">
+                                <i class="fas fa-star me-1"></i>Most Popular
+                            </div>
+                            <div class="card-body text-center p-4">
+                                <div class="plan-icon mb-3">
+                                    <i class="fas fa-rocket fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Pro</h5>
+                                
+                                <div class="ku-coins-amount mb-3">
+                                    <span class="h2 text-primary fw-bold">1,500</span>
+                                    <div><small class="text-muted">Ku coins / month</small></div>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h3 text-dark fw-bold">$50</span>
+                                    <div><small class="text-muted">per month</small></div>
+                                </div>
+                                
+                                <div class="estimated-usage mb-3 p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <small class="text-success fw-semibold">
+                                            <i class="fas fa-pen me-1"></i>~750,000 words/month
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <small class="text-info fw-semibold">
+                                            <i class="fas fa-image me-1"></i>~750 images/month
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="features mb-4">
+                                    <ul class="list-unstyled text-muted small">
+                                        <li><i class="fas fa-check text-success me-2"></i>1 MB Storage</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Priority Support</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Consistent creators</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn btn-primary btn-lg w-100" onclick="initializePayment('pro_monthly', 'Pro Monthly', 5000, 1500)">
+                                    <i class="fas fa-shopping-cart me-2"></i>Choose Pro
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="plan-icon mb-3">
+                                    <i class="fas fa-crown fa-3x text-warning"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Studio</h5>
+                                
+                                <div class="ku-coins-amount mb-3">
+                                    <span class="h2 text-primary fw-bold">5,000</span>
+                                    <div><small class="text-muted">Ku coins / month</small></div>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h3 text-dark fw-bold">$150</span>
+                                    <div><small class="text-muted">per month</small></div>
+                                </div>
+                                
+                                <div class="estimated-usage mb-3 p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <small class="text-success fw-semibold">
+                                            <i class="fas fa-pen me-1"></i>~2,500,000 words/month
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <small class="text-info fw-semibold">
+                                            <i class="fas fa-image me-1"></i>~2,500 images/month
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="features mb-4">
+                                    <ul class="list-unstyled text-muted small">
+                                        <li><i class="fas fa-check text-success me-2"></i>1 MB Storage</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Priority+ Support</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Teams & publishing workflows</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn btn-outline-warning btn-lg w-100" onclick="initializePayment('studio_monthly', 'Studio Monthly', 15000, 5000)">
+                                    <i class="fas fa-shopping-cart me-2"></i>Choose Studio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Yearly Plans -->
+                <div class="plan-group" id="yearlyPlans" style="display: none;">
+                  <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm border-success">
+                            <div class="card-header bg-success text-white text-center py-2">
+                                <small><i class="fas fa-percentage me-1"></i>50% OFF</small>
+                            </div>
+                            <div class="card-body text-center p-4">
+                                <div class="plan-icon mb-3">
+                                    <i class="fas fa-seedling fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Lite (Yearly)</h5>
+                                
+                                <div class="ku-coins-amount mb-3">
+                                    <span class="h2 text-primary fw-bold">250</span>
+                                    <div><small class="text-muted">Ku coins / month</small></div>
+                                    <div class="small text-info fw-semibold">3,000 Ku coins / year</div>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h3 text-dark fw-bold">$120</span>
+                                    <div><small class="text-muted">per year</small></div>
+                                    <div class="small text-success fw-semibold">($10/mo - 50% OFF)</div>
+                                </div>
+                                
+                                <div class="estimated-usage mb-3 p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <small class="text-success fw-semibold">
+                                            <i class="fas fa-pen me-1"></i>~125,000 words/month
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <small class="text-info fw-semibold">
+                                            <i class="fas fa-image me-1"></i>~125 images/month
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="features mb-4">
+                                    <ul class="list-unstyled text-muted small">
+                                        <li><i class="fas fa-check text-success me-2"></i>1 MB Storage</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Standard Support</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Long-term casual usage</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn btn-success btn-lg w-100" onclick="initializePayment('lite_yearly', 'Lite Yearly', 12000, 3000)">
+                                    <i class="fas fa-shopping-cart me-2"></i>Save 50% - Choose Lite
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 border-success shadow">
+                            <div class="card-header bg-success text-white text-center py-3">
+                                <i class="fas fa-star me-1"></i>Best Value - 50% OFF
+                            </div>
+                            <div class="card-body text-center p-4">
+                                <div class="plan-icon mb-3">
+                                    <i class="fas fa-rocket fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Pro (Yearly)</h5>
+                                
+                                <div class="ku-coins-amount mb-3">
+                                    <span class="h2 text-primary fw-bold">750</span>
+                                    <div><small class="text-muted">Ku coins / month</small></div>
+                                    <div class="small text-info fw-semibold">9,000 Ku coins / year</div>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h3 text-dark fw-bold">$300</span>
+                                    <div><small class="text-muted">per year</small></div>
+                                    <div class="small text-success fw-semibold">($25/mo - 50% OFF)</div>
+                                </div>
+                                
+                                <div class="estimated-usage mb-3 p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <small class="text-success fw-semibold">
+                                            <i class="fas fa-pen me-1"></i>~375,000 words/month
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <small class="text-info fw-semibold">
+                                            <i class="fas fa-image me-1"></i>~375 images/month
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="features mb-4">
+                                    <ul class="list-unstyled text-muted small">
+                                        <li><i class="fas fa-check text-success me-2"></i>1 MB Storage</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Priority Support</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Consistent creators</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn btn-success btn-lg w-100" onclick="initializePayment('pro_yearly', 'Pro Yearly', 30000, 9000)">
+                                    <i class="fas fa-shopping-cart me-2"></i>Save 50% - Choose Pro
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm border-success">
+                            <div class="card-header bg-success text-white text-center py-2">
+                                <small><i class="fas fa-percentage me-1"></i>50% OFF</small>
+                            </div>
+                            <div class="card-body text-center p-4">
+                                <div class="plan-icon mb-3">
+                                    <i class="fas fa-crown fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Studio (Yearly)</h5>
+                                
+                                <div class="ku-coins-amount mb-3">
+                                    <span class="h2 text-primary fw-bold">2,500</span>
+                                    <div><small class="text-muted">Ku coins / month</small></div>
+                                    <div class="small text-info fw-semibold">30,000 Ku coins / year</div>
+                                </div>
+                                
+                                <div class="price mb-3">
+                                    <span class="h3 text-dark fw-bold">$900</span>
+                                    <div><small class="text-muted">per year</small></div>
+                                    <div class="small text-success fw-semibold">($75/mo - 50% OFF)</div>
+                                </div>
+                                
+                                <div class="estimated-usage mb-3 p-3 bg-light rounded">
+                                    <div class="mb-2">
+                                        <small class="text-success fw-semibold">
+                                            <i class="fas fa-pen me-1"></i>~1,250,000 words/month
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <small class="text-info fw-semibold">
+                                            <i class="fas fa-image me-1"></i>~1,250 images/month
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="features mb-4">
+                                    <ul class="list-unstyled text-muted small">
+                                        <li><i class="fas fa-check text-success me-2"></i>1 MB Storage</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Priority+ Support</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Power users & teams</li>
+                                    </ul>
+                                </div>
+                                
+                                <button class="btn btn-success btn-lg w-100" onclick="initializePayment('studio_yearly', 'Studio Yearly', 90000, 30000)">
+                                    <i class="fas fa-shopping-cart me-2"></i>Save 50% - Choose Studio
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <i class="fas fa-magic fa-3x text-primary mb-3"></i>
+                    <h5>AI-Powered Generation</h5>
+                    <p class="text-muted">High-quality content generated using advanced AI models</p>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                    <i class="fas fa-download fa-3x text-success mb-3"></i>
+                    <h5>Multiple Export Formats</h5>
+                    <p class="text-muted">Download your content as PDF, Word Doc, or plain text</p>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                    <i class="fas fa-clock fa-3x text-info mb-3"></i>
+                    <h5>Instant Generation</h5>
+                    <p class="text-muted">Get your content generated in seconds, not hours</p>
+                </div>
+            </div>
+            
+            <!-- Back to Dashboard -->
+            <div class="text-center mt-5">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Purchase Modal -->
+<div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="purchaseModalLabel">
+                    <i class="fas fa-credit-card me-2"></i>Confirm Purchase
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="package-icon mb-3">
+                    <i class="fas fa-coins fa-3x text-info"></i>
+                </div>
+                <h5 id="modalPackageName">Package Name</h5>
+                <p class="text-muted">
+                    <span id="modalCredits">0</span> Ku coins for 
+                    <strong>$<span id="modalPrice">0</span></strong>
+                </p>
+                <p class="small text-muted">
+                    Ku coins will be added to your account instantly after purchase.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="proceedPayment">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if razorpay_enabled %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+{% endif %}
+
+<script>
+let selectedPackage = null;
+
+// Initialize payment with Razorpay
+function initializePayment(packageId, packageName, price, credits) {
+    selectedPackage = { id: packageId, name: packageName, price: price, credits: credits };
+    
+    document.getElementById('modalPackageName').textContent = packageName;
+    document.getElementById('modalCredits').textContent = credits;
+    document.getElementById('modalPrice').textContent = (price / 100).toFixed(2);
+    
+    new bootstrap.Modal(document.getElementById('purchaseModal')).show();
+}
+
+// Quick purchase for top-up packages (direct payment without modal)
+function purchaseTopUp(packageId, packageName, price, credits) {
+    // Create form and submit for immediate purchase
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/credits/purchase';
+    
+    const packageInput = document.createElement('input');
+    packageInput.type = 'hidden';
+    packageInput.name = 'package_id';
+    packageInput.value = packageId;
+    
+    form.appendChild(packageInput);
+    document.body.appendChild(form);
+    
+    // Show loading state
+    event.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    event.target.disabled = true;
+    
+    // Submit form
+    form.submit();
+}
+
+// Proceed with Razorpay payment
+document.getElementById('proceedPayment').addEventListener('click', function() {
+    if (!selectedPackage) return;
+    
+    // Create order on server
+    fetch('/credits/purchase', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `package_id=${selectedPackage.id}`
+    })
+    .then(response => {
+        console.log('Payment order response:', response);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Payment order data:', data);
+        if (data.success) {
+            // Initialize Razorpay payment
+            var options = {
+                "key": data.key_id,
+                "amount": data.amount,
+                "currency": data.currency,
+                "name": "Penora",
+                "description": `${data.ku_coins} Ku Coins Package`,
+                "order_id": data.order_id,
+                "handler": function (response) {
+                    // Verify payment on server
+                    fetch('/credits/payment/verify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            package_id: selectedPackage.id
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(result => {
+                        if (result.success) {
+                            alert(`Payment successful! ${result.credits_added} Ku coins added to your account.`);
+                            window.location.href = result.redirect_url;
+                        } else {
+                            alert('Payment verification failed: ' + result.error);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Payment verification error: ' + error.message);
+                    });
+                },
+                "prefill": {
+                    "name": "{{ user_data.username if user_data else 'User' }}",
+                    "email": "{{ user_data.email if user_data else 'user@example.com' }}"
+                },
+                "theme": {
+                    "color": "#0d6efd"
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        console.log('Payment cancelled by user');
+                    }
+                }
+            };
+            
+            var rzp = new Razorpay(options);
+            rzp.open();
+            
+            // Close bootstrap modal
+            bootstrap.Modal.getInstance(document.getElementById('purchaseModal')).hide();
+        } else {
+            console.error('Payment order creation failed:', data);
+            alert('Error creating order: ' + (data.error || 'Failed to create payment order'));
+        }
+    })
+    .catch(error => {
+        console.error('Network error creating payment order:', error);
+        alert('Network error: Failed to create payment order');
+    });
+});
+
+// Toggle between monthly and yearly plans
+function togglePlanType(type) {
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const yearlyBtn = document.getElementById('yearlyBtn');
+    const monthlyPlans = document.getElementById('monthlyPlans');
+    const yearlyPlans = document.getElementById('yearlyPlans');
+    
+    if (type === 'monthly') {
+        monthlyBtn.classList.add('active');
+        yearlyBtn.classList.remove('active');
+        monthlyPlans.style.display = 'block';
+        yearlyPlans.style.display = 'none';
+    } else if (type === 'yearly') {
+        yearlyBtn.classList.add('active');
+        monthlyBtn.classList.remove('active');
+        monthlyPlans.style.display = 'none';
+        yearlyPlans.style.display = 'block';
+    }
+}
+</script>
+
+{% endblock %}

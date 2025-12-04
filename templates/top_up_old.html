@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Top Up Credits - Penora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Current Balance -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">
+                    <i class="fas fa-wallet me-2 text-primary"></i>
+                    Current Balance
+                </h5>
+                <h2 class="text-primary mb-0">{{ current_user.credits }} Credits</h2>
+                <small class="text-muted">Available for text generation</small>
+            </div>
+        </div>
+        
+        <!-- Credit Packages -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>
+                    Choose a Credit Package
+                </h4>
+                <small class="text-muted">Select the package that best fits your needs</small>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-4">
+                        {% for package in packages %}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 border-2 package-card" onclick="selectPackage({{ package.id }})">
+                                <div class="card-body text-center">
+                                    <div class="package-icon mb-3">
+                                        {% if package.credits <= 10 %}
+                                            <i class="fas fa-battery-quarter fa-3x text-info"></i>
+                                        {% elif package.credits <= 30 %}
+                                            <i class="fas fa-battery-half fa-3x text-primary"></i>
+                                        {% elif package.credits <= 60 %}
+                                            <i class="fas fa-battery-three-quarters fa-3x text-success"></i>
+                                        {% else %}
+                                            <i class="fas fa-battery-full fa-3x text-warning"></i>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <h5 class="card-title">{{ package.name }}</h5>
+                                    
+                                    <div class="credits-amount mb-2">
+                                        <span class="h3 text-primary">{{ package.credits }}</span>
+                                        <small class="text-muted">credits</small>
+                                    </div>
+                                    
+                                    <div class="price mb-3">
+                                        <span class="h4">${{ "%.2f"|format(package.price) }}</span>
+                                    </div>
+                                    
+                                    <div class="value-calc mb-3">
+                                        <small class="text-muted">
+                                            ${{ "%.3f"|format(package.price / package.credits) }} per credit
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Package Benefits -->
+                                    <ul class="list-unstyled small text-muted">
+                                        {% if package.credits <= 10 %}
+                                            <li><i class="fas fa-check text-success me-1"></i>Perfect for trying out</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>{{ package.credits }} single prompts</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>Or 1-{{ package.credits }} chapter story</li>
+                                        {% elif package.credits <= 30 %}
+                                            <li><i class="fas fa-check text-success me-1"></i>Great for regular users</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>{{ package.credits }} single prompts</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>Multiple stories</li>
+                                        {% elif package.credits <= 60 %}
+                                            <li><i class="fas fa-check text-success me-1"></i>Best value package</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>Extended creative projects</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>Long-form stories</li>
+                                        {% else %}
+                                            <li><i class="fas fa-check text-success me-1"></i>Maximum creativity</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>Professional usage</li>
+                                            <li><i class="fas fa-check text-success me-1"></i>Unlimited possibilities</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                
+                                <div class="card-footer text-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="package_id" 
+                                               id="package{{ package.id }}" value="{{ package.id }}" required>
+                                        <label class="form-check-label" for="package{{ package.id }}">
+                                            Select Package
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Payment Section -->
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                                    Secure Payment Processing
+                                </h6>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>MVP Notice:</strong> This is a demonstration. 
+                                    Credits will be added immediately without payment processing.
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-lg" id="purchaseBtn" disabled>
+                                    <i class="fas fa-credit-card me-2"></i>
+                                    Purchase Credits
+                                </button>
+                                
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-lock me-1"></i>
+                                        Secure transaction • Credits added instantly
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- FAQ Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-question-circle me-2"></i>
+                    Frequently Asked Questions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do credits work?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Credits are used to generate AI content. Single prompts cost 1 credit, 
+                                and story chapters cost 1 credit per chapter. Credits never expire.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Can I get a refund?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Due to the nature of AI generation services, credits are non-refundable once purchased. 
+                                However, we're happy to help with any issues you encounter.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                What if generation fails?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                If an AI generation fails due to technical issues, your credits will not be deducted. 
+                                Only successful generations consume credits.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('account') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Account
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function selectPackage(packageId) {
+    // Remove selection from all cards
+    document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('border-primary', 'bg-light');
+    });
+    
+    // Select the clicked package
+    const selectedCard = event.currentTarget;
+    selectedCard.classList.add('border-primary', 'bg-light');
+    
+    // Check the radio button
+    document.getElementById('package' + packageId).checked = true;
+    
+    // Enable purchase button
+    document.getElementById('purchaseBtn').disabled = false;
+}
+
+// Handle radio button changes
+document.querySelectorAll('input[name="package_id"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('purchaseBtn').disabled = false;
+        }
+    });
+});
+</script>
+{% endblock %}

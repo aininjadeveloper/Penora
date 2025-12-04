@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Story Generator - Penora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-book me-2 text-success"></i>
+                    Multi-Chapter Story Generator
+                </h4>
+                <small class="text-muted">Create engaging stories with multiple chapters • 1 credit per chapter</small>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="storyForm">
+                    <div class="mb-3">
+                        <label for="story_prompt" class="form-label">
+                            <i class="fas fa-pen-fancy me-1"></i>Story Concept & Setting
+                        </label>
+                        <textarea class="form-control" id="story_prompt" name="story_prompt" rows="4" 
+                                placeholder="Describe your story concept, characters, setting, and plot... (e.g., 'A sci-fi adventure about space explorers who discover an ancient alien civilization on a distant planet')"
+                                required></textarea>
+                        <div class="form-text">
+                            Provide detailed context about characters, setting, genre, and plot direction for better story coherence.
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="chapter_count" class="form-label">
+                                <i class="fas fa-list-ol me-1"></i>Number of Chapters
+                            </label>
+                            <input type="range" class="form-range" id="chapter_count" name="chapter_count" 
+                                   min="1" max="50" value="2" oninput="updateChapterInfo()">
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span>1</span>
+                                <span>50</span>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-info" id="chapterDisplay">2 Chapters</span>
+                                <span class="badge bg-warning ms-2" id="creditCost">Cost: 2 Credits</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="chapter_length" class="form-label">
+                                <i class="fas fa-expand-alt me-1"></i>Chapter Length
+                            </label>
+                            <select class="form-select" id="chapter_length" name="chapter_length">
+                                <option value="1200">Short (~300-400 words)</option>
+                                <option value="1800">Medium (~400-500 words)</option>
+                                <option value="2500" selected>Long (~500-600 words)</option>
+                            </select>
+                            <div class="form-text">
+                                Longer chapters provide more detailed storytelling
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Credit Warning -->
+                    <div class="alert alert-info" id="creditWarning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Insufficient Credits:</strong> You need more credits to generate this story.
+                        <a href="{{ url_for('pricing') }}" class="alert-link">Buy more credits</a>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-muted">
+                            <i class="fas fa-coins me-1"></i>
+                            You have: {{ current_user.credits }} credits available
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success" id="generateStoryBtn">
+                            <i class="fas fa-magic me-2"></i>Generate Story
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Generated Story Results -->
+                {% if generated and story_title %}
+                <hr class="my-4">
+                
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-book me-2"></i>{{ story_title }}
+                        </h5>
+                        <small>Generated {{ chapters|length }} chapter{{ 's' if chapters|length > 1 else '' }}</small>
+                    </div>
+                    <div class="card-body">
+                        {% for chapter in chapters %}
+                        <div class="chapter-section {% if not loop.first %}mt-4 pt-4 border-top{% endif %}">
+                            <h6 class="text-primary mb-3">
+                                <i class="fas fa-bookmark me-2"></i>{{ chapter.title }}
+                                <small class="text-muted">({{ chapter.word_count }} words)</small>
+                            </h6>
+                            <div class="chapter-content">
+                                {{ chapter.content|replace('\n', '<br>')|safe }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="copyStoryToClipboard()">
+                                        <i class="fas fa-copy me-1"></i>Copy Story
+                                    </button>
+                                    
+                                    {% if generation_id %}
+                                    <!-- Export Dropdown for Story -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-download me-1"></i>Export
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="{{ url_for('export_generation', generation_id=generation_id, format='pdf') }}">
+                                                <i class="fas fa-file-pdf me-2 text-danger"></i>Export as PDF
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('export_generation', generation_id=generation_id, format='doc') }}">
+                                                <i class="fas fa-file-word me-2 text-primary"></i>Export as Word
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('export_generation', generation_id=generation_id, format='txt') }}">
+                                                <i class="fas fa-file-alt me-2 text-secondary"></i>Export as Text
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <a href="{{ url_for('story_generator') }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Generate Another Story
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+        
+        <!-- Professional Loading Section (Hidden by default) - Shows below form when generating -->
+        <div class="col-lg-8" id="loadingSection" style="display: none;">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <h5 class="text-info mb-3">
+                        <i class="fas fa-book me-2"></i>Crafting Your Story...
+                    </h5>
+                    <p class="text-muted mb-4">
+                        Our AI is writing your multi-chapter story. This typically takes 15-30 seconds.
+                        <br><strong>Please don't close this page.</strong>
+                    </p>
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" 
+                             role="progressbar" style="width: 0%" id="progressBar">
+                            <span class="fw-bold" id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="badge bg-info fs-6 py-2 px-3" id="progressText">
+                        <i class="fas fa-cogs me-2"></i>Analyzing your story concept...
+                    </div>
+                </div>
+            </div>
+        </div>
+                
+                <!-- Story Guidelines -->
+                <div class="mt-4">
+                    <h6><i class="fas fa-lightbulb me-2 text-warning"></i>Story Writing Tips</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="small text-muted">
+                                <li>Include main character names and personalities</li>
+                                <li>Specify the genre (mystery, romance, sci-fi, etc.)</li>
+                                <li>Describe the setting and time period</li>
+                                <li>Outline the main conflict or challenge</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="small text-muted">
+                                <li>Mention desired story tone (dark, humorous, dramatic)</li>
+                                <li>Include any specific plot points you want</li>
+                                <li>Consider your target audience</li>
+                                <li>More chapters = more detailed story development</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Back to Dashboard -->
+        <div class="text-center mt-3">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateChapterInfo() {
+    const chapterCount = document.getElementById('chapter_count').value;
+    const userCredits = {{ current_user.credits }};
+    
+    document.getElementById('chapterDisplay').textContent = chapterCount + ' Chapter' + (chapterCount > 1 ? 's' : '');
+    document.getElementById('creditCost').textContent = 'Cost: ' + chapterCount + ' Credit' + (chapterCount > 1 ? 's' : '');
+    
+    const generateBtn = document.getElementById('generateStoryBtn');
+    const creditWarning = document.getElementById('creditWarning');
+    
+    if (userCredits < chapterCount) {
+        generateBtn.disabled = true;
+        creditWarning.style.display = 'block';
+    } else {
+        generateBtn.disabled = false;
+        creditWarning.style.display = 'none';
+    }
+}
+
+// Show progress when form is submitted - copy exact single prompt approach
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const generateBtn = document.getElementById('generateStoryBtn');
+    const loadingSection = document.getElementById('loadingSection');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    
+    if (form && generateBtn) {
+        form.addEventListener('submit', function(e) {
+            // Show loading state
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            generateBtn.disabled = true;
+            
+            // Show loading section
+            loadingSection.style.display = 'block';
+            
+            // Simulate progress - exact same as single prompt
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10 + 5;
+                if (progress > 95) progress = 95;
+                
+                const roundedProgress = Math.round(progress);
+                progressBar.style.width = roundedProgress + '%';
+                document.getElementById('progressPercent').textContent = roundedProgress + '%';
+                
+                if (progress < 30) {
+                    progressText.innerHTML = '<i class="fas fa-search me-2"></i>Analyzing your story concept...';
+                } else if (progress < 60) {
+                    progressText.innerHTML = '<i class="fas fa-pen-fancy me-2"></i>Writing your chapters...';
+                } else if (progress < 90) {
+                    progressText.innerHTML = '<i class="fas fa-edit me-2"></i>Polishing the story...';
+                } else {
+                    progressText.innerHTML = '<i class="fas fa-check-circle me-2"></i>Finalizing your story...';
+                }
+            }, 800);
+            
+            // Clean up on page unload
+            window.addEventListener('beforeunload', () => clearInterval(interval));
+        });
+    }
+    
+    // Initialize on page load
+    updateChapterInfo();
+});
+</script>
+{% endblock %}
