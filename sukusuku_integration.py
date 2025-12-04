@@ -223,6 +223,8 @@ def get_user_data():
             sso_email = email_param or f"sso_user_{user_id_param}@sukusuku.ai"
             sso_username = first_name_param or f"SSO_User_{user_id_param}"
             
+            logger.info(f"🔍 SSO DEBUG: Params received - ID: {user_id_param}, Email: {email_param}, Name: {first_name_param}")
+
             # Check cache first
             cached_user = fast_sukusuku_integration.get_user_from_cache(sso_user_id)
             if cached_user:

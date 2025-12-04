@@ -95,6 +95,7 @@ from datetime import datetime
 # Configure logger for routes
 logger = logging.getLogger(__name__)
 
+
 @app.route('/health')
 def health_check():
     """Fast health check endpoint for deployment"""
@@ -135,6 +136,40 @@ def health_detailed():
             "message": str(e),
             "timestamp": datetime.now().isoformat()
         }), 500
+
+@app.route('/debug-auth')
+def debug_auth():
+    """Debug route to inspect authentication state"""
+    try:
+        debug_info = {
+            "session": dict(session),
+            "cookies": dict(request.cookies),
+            "headers": dict(request.headers),
+            "args": dict(request.args),
+            "user_data_from_func": get_user_data(),
+            "g_user": getattr(g, 'user', 'Not Set')
+        }
+        # Sanitize secrets
+        if 'headers' in debug_info:
+            headers = debug_info['headers']
+            keys_to_redact = ['Authorization', 'Cookie', 'X-Api-Key']
+            for k in keys_to_redact:
+                if k in headers:
+                    headers[k] = 'REDACTED'
+        
+        return jsonify(debug_info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/force-logout')
+def force_logout():
+    """Force clear session and redirect"""
+    session.clear()
+    response = make_response(redirect(url_for('index')))
+    # Clear specific cookies if known
+    response.set_cookie('session', '', expires=0)
+    return response
+
 
 @app.route('/')
 @app.route('/penora')

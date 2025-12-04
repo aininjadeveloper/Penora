@@ -131,6 +131,10 @@ def check_sukusuku_auth():
     
     # Get user data and store in Flask context
     user_data = get_current_sukusuku_user()
+    if user_data:
+        logging.debug(f"👤 Auth Check: User {user_data.get('username')} authenticated")
+    else:
+        logging.debug("👤 Auth Check: No user authenticated")
     g.user = user_data
 
 # Import routes
