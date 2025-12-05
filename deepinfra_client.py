@@ -79,6 +79,43 @@ def ask_deepinfra(prompt: str, system_msg: str = "You are a helpful assistant.",
         raise Exception(f"DeepInfra API error: {str(e)}")
 
 
+# Model Configurations
+DEEPINFRA_MODELS = {
+    'balanced': {
+        'name': 'mistralai/Mistral-7B-Instruct-v0.3',
+        'display_name': 'Mistral 7B (Balanced)',
+        'description': 'Good balance of speed and quality',
+        'max_tokens': 2500,
+        'cost_multiplier': 1.0
+    },
+    'creative': {
+        'name': 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        'display_name': 'Mixtral 8x7B (Creative)',
+        'description': 'Better for creative writing and stories',
+        'max_tokens': 4000,
+        'cost_multiplier': 2.0
+    },
+    'fast': {
+        'name': 'mistralai/Mistral-7B-Instruct-v0.3',
+        'display_name': 'Mistral 7B (Fast)',
+        'description': 'Fastest generation for simple tasks',
+        'max_tokens': 1000,
+        'cost_multiplier': 0.5
+    },
+    'smart': {
+        'name': 'meta-llama/Meta-Llama-3-70B-Instruct',
+        'display_name': 'Llama 3 70B (Smart)',
+        'description': 'Highest quality for complex instructions',
+        'max_tokens': 4000,
+        'cost_multiplier': 3.0
+    }
+}
+
+def get_model_config(model_type='balanced'):
+    """Get configuration for a specific model type"""
+    return DEEPINFRA_MODELS.get(model_type, DEEPINFRA_MODELS['balanced'])
+
+
 if __name__ == "__main__":
     # Test the DeepInfra client
     try:
