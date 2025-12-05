@@ -36,8 +36,8 @@ class AIService:
             content = ask_deepinfra(
                 enhanced_prompt, 
                 system_msg, 
-                model_config['name'],
-                model_config['max_tokens']
+                model=model_config['name'],
+                max_tokens=model_config['max_tokens']
             )
             
             return {
@@ -79,8 +79,8 @@ class AIService:
             content = ask_deepinfra(
                 prompt, 
                 system_msg, 
-                model_config['name'],
-                min(max_tokens, model_config['max_tokens'])
+                model=model_config['name'],
+                max_tokens=min(max_tokens, model_config['max_tokens'])
             )
             
             return {
@@ -98,55 +98,7 @@ class AIService:
                 "error": f"Failed to generate chapter: {str(e)}"
             }
     
-    def process_uploaded_file(self, file_content, instruction, model_type='balanced'):
-        """Process uploaded file with user instruction"""
-        if not self.available:
-            return {
-                "success": False,
-                "error": "AI service is temporarily unavailable. Please try again in a moment."
-            }
-            
-        try:
-            model_config = self.models.get(model_type, self.models['balanced'])
-            
-            # Limit file content to prevent token overflow
-            max_content_length = 3000
-            if len(file_content) > max_content_length:
-                file_content = file_content[:max_content_length] + "..."
-            
-            prompt = f"""
-            Based on this existing content:
-            
-            {file_content}
-            
-            User instruction: {instruction}
-            
-            Please {instruction.lower()} the content while maintaining quality and coherence.
-            """
-            
-            system_msg = f"You are a professional editor and writer. Help improve and transform content based on user requests."
-            
-            content = ask_deepinfra(
-                prompt,
-                system_msg,
-                model_config['name'],
-                model_config['max_tokens']
-            )
-            
-            return {
-                "success": True,
-                "content": content,
-                "model_used": model_config['display_name'],
-                "instruction": instruction,
-                "word_count": len(content.split()) if content else 0
-            }
-            
-        except Exception as e:
-            logging.error(f"File processing exception: {str(e)}")
-            return {
-                "success": False,
-                "error": f"Failed to process file: {str(e)}"
-            }
+
 
     def get_model_options(self):
         """Get available model options for UI dropdown"""
@@ -205,7 +157,7 @@ class AIService:
         try:
             prompt = f"Generate a compelling, creative title for a story about: {story_prompt}. Return only the title, no quotes or extra text."
             system_msg = "You are a title generator. Create short, catchy titles for stories."
-            title = ask_deepinfra(prompt, system_msg, "mistralai/Mixtral-8x7B-Instruct-v0.1", 50)
+            title = ask_deepinfra(prompt, system_msg, model="mistralai/Mixtral-8x7B-Instruct-v0.1", max_tokens=50)
             
             return {
                 "success": True,
@@ -226,7 +178,7 @@ class AIService:
             
         try:
             system_msg = "You are a creative writing assistant. Generate high-quality, engaging content based on the user's prompt. Write approximately 800-1200 words with proper structure and flow."
-            content = ask_deepinfra(prompt, system_msg, "mistralai/Mixtral-8x7B-Instruct-v0.1", 2000)
+            content = ask_deepinfra(prompt, system_msg, model="mistralai/Mixtral-8x7B-Instruct-v0.1", max_tokens=2000)
             return content
             
         except Exception as e:
@@ -262,7 +214,7 @@ class AIService:
                 story_prompt = f"Create a {page_count}-page story about: {prompt}. Structure it with clear page breaks. Each page should be approximately {words_per_page} words. Use 'Page X:' headers to separate pages clearly."
                 system_msg = f"You are a professional storyteller. Create a {page_count}-page story with engaging narrative, character development, and proper structure. Keep each page concise but engaging with approximately {words_per_page} words per page."
             
-            content = ask_deepinfra(story_prompt, system_msg, "mistralai/Mixtral-8x7B-Instruct-v0.1", max_tokens)
+            content = ask_deepinfra(story_prompt, system_msg, model="mistralai/Mixtral-8x7B-Instruct-v0.1", max_tokens=max_tokens)
             return content
             
         except Exception as e:
