@@ -49,18 +49,64 @@ def register_unified_apis(app):
             
             # Get user credits and storage info
             credits = unified_system.get_user_credits(user_id)
-            storage_stats = unified_system.get_storage_stats(user_id)
             
+            # Return exact format required by SukuSuku
             return jsonify({
-                'success': True,
-                'user_id': user_id,
                 'credits': credits,
-                'storage': storage_stats,
-                'timestamp': datetime.now().isoformat()
+                'user_id': user_id
             })
             
         except Exception as e:
             logger.error(f"Error getting unified user info: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+    @app.route('/api/unified/add-credits', methods=['POST'])
+    def add_unified_credits():
+        """Add credits to user account (SukuSuku integration)"""
+        # Check API key for external access
+        auth_error = require_api_key()
+        if auth_error:
+            return auth_error
+            
+        try:
+            data = request.get_json()
+            user_id = data.get('user_id')
+            amount = data.get('amount')
+            transaction_type = data.get('transaction_type', 'purchase')
+            description = data.get('description', 'Credit addition')
+            
+            if not all([user_id, amount]):
+                return jsonify({
+                    'success': False, 
+                    'error': 'Missing required fields: user_id, amount'
+                }), 400
+            
+            # Use unified system to add credits (we'll use a negative deduction or implement add_credits in shared system)
+            # Since unified_system.deduct_credits only deducts, we need to check if it supports adding or use a direct DB call
+            # For now, we'll assume we can use the underlying integration directly if needed, 
+            # but let's check if we can add a method to unified_system first.
+            # Actually, let's use the sukusuku_integration directly for this specific operation if needed,
+            # or better, assume unified_system has or will have add_credits.
+            
+            # Let's try to use the sukusuku_integration directly for now as it has add_credits
+            from sukusuku_integration import sukusuku_integration
+            success = sukusuku_integration.add_credits(user_id, amount, description)
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': f'Successfully added {amount} credits',
+                    'user_id': user_id,
+                    'amount_added': amount
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'Failed to add credits'
+                }), 500
+                
+        except Exception as e:
+            logger.error(f"Error adding unified credits: {e}")
             return jsonify({'success': False, 'error': str(e)}), 500
     
     @app.route('/api/unified/projects', methods=['GET'])

@@ -29,7 +29,12 @@ app.secret_key = os.environ.get("SESSION_SECRET") or os.environ.get("SECRET_KEY"
 # OAuth configuration
 app.config['GOOGLE_OAUTH_CLIENT_ID'] = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')
 app.config['GOOGLE_OAUTH_CLIENT_SECRET'] = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET')
+app.config['GOOGLE_OAUTH_CLIENT_SECRET'] = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1) # needed for url_for to generate with https
+
+# CORS Configuration
+from flask_cors import CORS
+CORS(app, resources={r"/api/*": {"origins": ["https://sukusuku.ai", "http://localhost:5000"]}})
 
 # configure the database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
