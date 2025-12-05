@@ -1,6 +1,6 @@
 import os
 import logging
-from deepinfra_client_fixed import ask_deepinfra, get_model_config, DEEPINFRA_MODELS
+from deepinfra_client import ask_deepinfra, get_model_config, DEEPINFRA_MODELS
 
 class AIService:
     def __init__(self):

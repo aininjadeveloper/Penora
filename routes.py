@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from io import BytesIO
 from app import app, db
 from models import User, Transaction, Generation, CreditPackage, WorkspaceProject
-from ai_service_fixed import ai_service
+from ai_service import ai_service
 from pdf_service import pdf_service
 from export_service import export_service
 from sukusuku_integration import sukusuku_integration, require_sukusuku_auth, get_current_sukusuku_user, deduct_credits, get_user_data
