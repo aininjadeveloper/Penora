@@ -213,6 +213,13 @@ def index():
         # Check if user is already in session from previous authentication
         if 'user_data' in session and session.get('authenticated'):
             user_data = session.get('user_data')
+            
+            # HOTFIX: Clear stale Lucifer_Jhon sessions from previous testing
+            if user_data.get('username') == 'Lucifer_Jhon':
+                logger.warning("⚠️ Detected stale Lucifer_Jhon session - clearing")
+                session.clear()
+                return redirect(url_for('index'))
+                
             logger.info(f"✅ Using session user: {user_data.get('username', 'Unknown')}")
         else:
             # No authentication found - show login page or allow guest access
