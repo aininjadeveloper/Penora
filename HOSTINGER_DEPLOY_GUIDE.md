@@ -17,7 +17,7 @@ This guide outlines the steps to deploy and troubleshoot the Penora application 
 
 2.  **Navigate to the project directory**:
     ```bash
-    cd /var/www/penora/Penora
+    cd /var/www/penora
     ```
 
 3.  **Pull the latest code**:
@@ -28,7 +28,7 @@ This guide outlines the steps to deploy and troubleshoot the Penora application 
 
 4.  **Update Dependencies**:
     ```bash
-    source ../venv/bin/activate
+    source venv/bin/activate
     pip install -r requirements.txt
     ```
 
@@ -57,8 +57,23 @@ Ensure the service file points to the correct application object.
 ```bash
 cat /etc/systemd/system/penora.service
 ```
-It should look something like:
-`ExecStart=/var/www/penora/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5100 main:app`
+It should look like this:
+```ini
+[Unit]
+Description=Penora Flask App (Gunicorn)
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/var/www/penora
+Environment="PATH=/var/www/penora/venv/bin"
+ExecStart=/var/www/penora/venv/bin/gunicorn --workers 2 --bind 127.0.0.1:5100 --timeout 120 main:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
 *Note: We use `main:app` because `main.py` registers the unified APIs.*
 
 ### 3. Manual Run (Debug Mode)

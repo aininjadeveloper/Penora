@@ -514,7 +514,7 @@ def start_writing():
             try:
                 if page_count == 1:
                     # Single page generation - use simple working API
-                    from ai_service_fixed import generate_text_simple
+                    from ai_service import generate_text_simple
                     generation_result = generate_text_simple(prompt, model_type, pages=1)
                     if generation_result['success']:
                         result = generation_result['content']
@@ -524,7 +524,7 @@ def start_writing():
                         return render_template('start_writing.html', user_data=user_data, credits=credits)
                 else:
                     # Multi-page generation - use updated function
-                    from ai_service_fixed import generate_text_simple
+                    from ai_service import generate_text_simple
                     generation_result = generate_text_simple(prompt, model_type, pages=page_count)
                     if generation_result.get('success'):
                         result = generation_result['content']

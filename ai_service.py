@@ -501,3 +501,36 @@ class AIService:
 
 # Create a global instance
 ai_service = AIService()
+
+def generate_text_simple(prompt, model_type='balanced', pages=1):
+    """
+    Simplified generation function that handles both single and multi-page requests.
+    This acts as a bridge between the route handlers and the AIService class.
+    """
+    try:
+        if pages > 1:
+            # Multi-page generation
+            # Use generate_story_with_model for better control
+            content = ai_service.generate_story_with_model(prompt, pages, model_type)
+            if content:
+                return {
+                    "success": True, 
+                    "content": content, 
+                    "model_used": model_type
+                }
+            else:
+                return {
+                    "success": False, 
+                    "error": "Failed to generate content"
+                }
+        else:
+            # Single page generation
+            # Map request to generate_text
+            return ai_service.generate_text(prompt, model_type, length='long')
+            
+    except Exception as e:
+        logging.error(f"generate_text_simple error: {e}")
+        return {
+            "success": False, 
+            "error": str(e)
+        }
