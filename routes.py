@@ -1160,20 +1160,14 @@ def download_workspace_project(code, format):
             safe_title = re.sub(r'[^a-zA-Z0-9_\-]', '_', project.project_title[:20])
             filename = f'{project.code}_{safe_title}.pdf'
             
-            # Create response properties
-            file_content = pdf_result['pdf_content']
+            # Create BytesIO buffer from PDF content
+            from io import BytesIO
+            pdf_buffer = BytesIO(pdf_result['pdf_content'])
+            logging.info(f"✅ PDF generated successfully, sending file: {filename}")
             
-            response = make_response(file_content)
-            response.headers['Content-Type'] = 'application/pdf'
-            # Use ASCII-only filename for maximum compatibility
-            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-            response.headers['Content-Length'] = len(file_content)
-            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-            response.headers['Pragma'] = 'no-cache'
-            response.headers['Expires'] = '0'
-            
-            logging.info(f"✅ Sending PDF response: {len(file_content)} bytes")
-            return response
+            return send_file(pdf_buffer, as_attachment=True, 
+                            download_name=filename,
+                            mimetype='application/pdf')
         
         elif format in ['docx', 'txt']:
             # Import locally
@@ -1197,18 +1191,15 @@ def download_workspace_project(code, format):
             filename = f'{project.code}_{safe_title}.{format}'
             
             mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' if format == 'docx' else 'text/plain'
-            file_content = export_result['data']
             
-            response = make_response(file_content)
-            response.headers['Content-Type'] = mimetype
-            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-            response.headers['Content-Length'] = len(file_content)
-            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-            response.headers['Pragma'] = 'no-cache'
-            response.headers['Expires'] = '0'
-
-            logging.info(f"✅ Sending {format.upper()} response: {len(file_content)} bytes")
-            return response
+            # Create BytesIO buffer from file content
+            from io import BytesIO
+            content_buffer = BytesIO(export_result['data'])
+            
+            logging.info(f"✅ {format.upper()} generated successfully, sending file: {filename}")
+            return send_file(content_buffer, as_attachment=True,
+                            download_name=filename,
+                            mimetype=mimetype)
         
         else:
             logging.error(f"❌ Invalid format requested: {format}")

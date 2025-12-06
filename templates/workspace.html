@@ -104,8 +104,7 @@
                                 </div>
 
                                 <form action="{{ url_for('delete_workspace_project', code=project.code) }}"
-                                    method="POST" class="d-inline ms-2"
-                                    onsubmit="return confirm('Delete this project?');">
+                                    method="POST" class="d-inline ms-2">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
