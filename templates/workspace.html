@@ -307,42 +307,24 @@
     });
 </script>
 <script>
-    async function downloadProject(url, filename) {
-        try {
-            // Show feedback immediately
-            if (typeof showToast === 'function') {
-                showToast('Starting download...', 'info');
-            } else {
-                console.log('Starting download...');
-            }
-
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                alert(`Download Failed: ${errorText}`);
-                return;
-            }
-
-            const blob = await response.blob();
-            const downloadUrl = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = downloadUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(downloadUrl);
-            document.body.removeChild(a);
-
-            if (typeof showToast === 'function') {
-                showToast('Download complete!', 'success');
-            }
-
-        } catch (error) {
-            console.error('Download error:', error);
-            alert(`Network Error: ${error.message}`);
+    function downloadProject(url, filename) {
+        // Show immediate feedback
+        if (typeof showToast === 'function') {
+            showToast('Download started...', 'info');
         }
+
+        // Create hidden iframe to trigger download via browser native handling
+        // This bypasses JS blob saving issues and "new tab" requirements
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+        document.body.appendChild(iframe);
+
+        // Clean up iframe after enough time for the download to start
+        setTimeout(() => {
+            document.body.removeChild(iframe);
+        }, 60000);
     }
 </script>
 {% endblock %}
+```
