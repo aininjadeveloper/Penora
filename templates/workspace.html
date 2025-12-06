@@ -196,45 +196,74 @@ toast.remove();
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Copy functionality
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-            btn.addEventListener('click', async function () {
-                const code = this.dataset.code;
-
-                try {
-                    const response = await fetch(`/workspace/copy/${code}`);
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        // Copy to clipboard
-                        const textToCopy = `Title: ${data.title}\nCode: ${data.code}\n\nContent:\n${data.content}`;
-                        await navigator.clipboard.writeText(textToCopy);
-
-                        // Show modal
-                        document.getElementById('copiedTitle').textContent = data.title;
-                        document.getElementById('copiedCode').textContent = data.code;
-                        new bootstrap.Modal(document.getElementById('copyModal')).show();
-                    } else {
-                        alert('Error copying content: ' + data.error);
-                    }
-                } catch (error) {
-                    alert('Error copying content. Please try again.');
-                }
-            });
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     });
-</script>
-<script>
-    function downloadProject(url, filename) {
-        // Show immediate feedback
-        if (typeof showToast === 'function') {
-            showToast('Starting download...', 'info');
-        }
 
-        // Use simple navigation - this is the most reliable method
-        // for triggering server-side downloads with Content-Disposition
-        window.location.href = url + '?t=' + new Date().getTime();
+    // View Project Function
+    async function viewProject(code) {
+        try {
+            // Using /workspace/copy endpoint as it returns the full content we need
+            const response = await fetch(`/workspace/copy/${code}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('viewModalTitle').textContent = data.title;
+                document.getElementById('viewModalContent').textContent = data.content;
+
+                // Configure the "Copy Content" button inside the View Modal
+                const copyBtn = document.querySelector('.copy-btn-modal');
+                // Remove old event listeners by cloning
+                const newCopyBtn = copyBtn.cloneNode(true);
+                copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+
+                newCopyBtn.onclick = () => {
+                    navigator.clipboard.writeText(data.content);
+                    // Close view modal
+                    const viewModalEl = document.getElementById('viewModal');
+                    bootstrap.Modal.getInstance(viewModalEl).hide();
+
+                    // Show copy success modal
+                    document.getElementById('copiedTitle').textContent = data.title;
+                    document.getElementById('copiedCode').textContent = data.code;
+                    new bootstrap.Modal(document.getElementById('copyModal')).show();
+                };
+
+                new bootstrap.Modal(document.getElementById('viewModal')).show();
+            } else {
+                const data = await response.json();
+                alert('Error loading project: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to load project details');
+        }
+    }
+
+    // Copy Project Function
+    async function copyProjectText(code) {
+        try {
+            const response = await fetch(`/workspace/copy/${code}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                const textToCopy = `Title: ${data.title}\nCode: ${data.code}\n\nContent:\n${data.content}`;
+                await navigator.clipboard.writeText(textToCopy);
+
+                document.getElementById('copiedTitle').textContent = data.title;
+                document.getElementById('copiedCode').textContent = data.code;
+                new bootstrap.Modal(document.getElementById('copyModal')).show();
+            } else {
+                const data = await response.json();
+                alert('Error copying content: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to copy content');
+        }
     }
 </script>
 {% endblock %}
-```
