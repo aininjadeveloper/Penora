@@ -43,8 +43,9 @@
             <div class="row">
                 {% for project in projects %}
                 <div class="col-lg-6 col-xl-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card h-100 shadow-sm border-0 red-glow" style="overflow: visible;">
+                        <div
+                            class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center mb-0 pb-0">
                             <h6 class="mb-0 text-truncate" title="{{ project.project_title }}">{{ project.project_title
                                 }}</h6>
                             <span class="badge bg-secondary">{{ project.code }}</span>
@@ -92,15 +93,33 @@
                                         <i class="fas fa-download"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dlDropdown{{ project.code }}">
-                                        <li><a class="dropdown-item"
-                                                href="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"
-                                                download><i class="fas fa-file-pdf me-2"></i>PDF</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="{{ url_for('download_workspace_project', code=project.code, format='docx') }}"
-                                                download><i class="fas fa-file-word me-2"></i>DOCX</a></li>
-                                        <li><a class="dropdown-item"
-                                                href="{{ url_for('download_workspace_project', code=project.code, format='txt') }}"
-                                                download><i class="fas fa-file-alt me-2"></i>TXT</a></li>
+                                        <li>
+                                            <form
+                                                action="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"
+                                                method="GET" target="_self" class="w-100">
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="fas fa-file-pdf me-2"></i>PDF
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form
+                                                action="{{ url_for('download_workspace_project', code=project.code, format='docx') }}"
+                                                method="GET" target="_self" class="w-100">
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="fas fa-file-word me-2"></i>DOCX
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form
+                                                action="{{ url_for('download_workspace_project', code=project.code, format='txt') }}"
+                                                method="GET" target="_self" class="w-100">
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="fas fa-file-alt me-2"></i>TXT
+                                                </button>
+                                            </form>
+                                        </li>
                                     </ul>
                                 </div>
 
