@@ -69,53 +69,43 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-sm btn-outline-info"
+                        <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                            <!-- Main Actions -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-info flex-grow-1 me-1"
                                     onclick="viewProject('{{ project.code }}')" title="View">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-eye"></i> View
                                 </button>
-
                                 <a href="{{ url_for('edit_workspace_project', code=project.code) }}"
-                                    class="btn btn-sm btn-outline-primary" title="Edit">
-                                    <i class="fas fa-edit"></i>
+                                    class="btn btn-sm btn-outline-primary flex-grow-1 mx-1" title="Edit">
+                                    <i class="fas fa-edit"></i> Edit
                                 </a>
-
-                                <button type="button" class="btn btn-sm btn-outline-success"
+                                <button type="button" class="btn btn-sm btn-outline-success flex-grow-1 ms-1"
                                     onclick="copyProjectText('{{ project.code }}')" title="Copy">
-                                    <i class="fas fa-copy"></i>
+                                    <i class="fas fa-copy"></i> Copy
                                 </button>
+                            </div>
 
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button"
-                                        id="dlDropdown{{ project.code }}" data-bs-toggle="dropdown"
-                                        aria-expanded="false" title="Download">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dlDropdown{{ project.code }}">
-                                        <li>
-                                            <button class="dropdown-item"
-                                                onclick="downloadProject('{{ url_for('download_workspace_project', code=project.code, format='pdf') }}', '{{ project.code }}.pdf')">
-                                                <i class="fas fa-file-pdf me-2"></i>PDF
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item"
-                                                onclick="downloadProject('{{ url_for('download_workspace_project', code=project.code, format='docx') }}', '{{ project.code }}.docx')">
-                                                <i class="fas fa-file-word me-2"></i>DOCX
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item"
-                                                onclick="downloadProject('{{ url_for('download_workspace_project', code=project.code, format='txt') }}', '{{ project.code }}.txt')">
-                                                <i class="fas fa-file-alt me-2"></i>TXT
-                                            </button>
-                                        </li>
-                                    </ul>
+                            <!-- Download & Delete Actions -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"
+                                        class="btn btn-outline-secondary" download title="Download PDF">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                    <a href="{{ url_for('download_workspace_project', code=project.code, format='docx') }}"
+                                        class="btn btn-outline-secondary" download title="Download DOCX">
+                                        <i class="fas fa-file-word"></i> DOCX
+                                    </a>
+                                    <a href="{{ url_for('download_workspace_project', code=project.code, format='txt') }}"
+                                        class="btn btn-outline-secondary" download title="Download TXT">
+                                        <i class="fas fa-file-alt"></i> TXT
+                                    </a>
                                 </div>
 
                                 <form action="{{ url_for('delete_workspace_project', code=project.code) }}"
-                                    method="POST" class="d-inline">
+                                    method="POST" class="d-inline ms-2"
+                                    onsubmit="return confirm('Delete this project?');">
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -143,83 +133,11 @@
     </div>
 </div>
 
-<script>
-    function copyProjectText(code) {
-        // Fetch the full project text and copy it
-        fetch(`/workspace/copy/${code}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.content) {
-                    navigator.clipboard.writeText(data.content).then(function () {
-                        showToast('Project content copied to clipboard!', 'success');
-                    }, function (err) {
-                        showToast('Failed to copy content', 'danger');
-                    });
-                } else {
-                    showToast('Failed to fetch project content', 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Error fetching project content', 'danger');
-            });
-    }
 
-    function viewProject(code) {
-        // Fetch and show project in modal
-        fetch(`/workspace/copy/${code}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.content) {
-                    // Create and show modal
-                    const modal = document.createElement('div');
-                    modal.className = 'modal fade';
-                    modal.innerHTML = `
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">${data.title}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <pre style="white-space: pre-wrap; max-height: 500px; overflow-y: auto;">${data.content}</pre>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="copyProjectText('${code}')">Copy Text</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                    document.body.appendChild(modal);
-                    const bootstrapModal = new bootstrap.Modal(modal);
-                    bootstrapModal.show();
-                    modal.addEventListener('hidden.bs.modal', () => modal.remove());
-                } else {
-                    showToast('Failed to fetch project content', 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Error fetching project content', 'danger');
-            });
-    }
-
-    function showToast(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-        toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-        toast.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 4000);
-    }
+setTimeout(() => {
+toast.remove();
+}, 4000);
+}
 </script>
 
 <!-- Save New Project Modal -->
