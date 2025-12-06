@@ -310,20 +310,12 @@
     function downloadProject(url, filename) {
         // Show immediate feedback
         if (typeof showToast === 'function') {
-            showToast('Download started...', 'info');
+            showToast('Starting download...', 'info');
         }
 
-        // Create hidden iframe to trigger download via browser native handling
-        // This bypasses JS blob saving issues and "new tab" requirements
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = url;
-        document.body.appendChild(iframe);
-
-        // Clean up iframe after enough time for the download to start
-        setTimeout(() => {
-            document.body.removeChild(iframe);
-        }, 60000);
+        // Use simple navigation - this is the most reliable method
+        // for triggering server-side downloads with Content-Disposition
+        window.location.href = url + '?t=' + new Date().getTime();
     }
 </script>
 {% endblock %}

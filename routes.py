@@ -1155,12 +1155,18 @@ def download_workspace_project(code, format):
                 logging.error(f"❌ PDF GENERATION FAILED: {error_msg}")
                 return f"Error generating PDF: {error_msg}", 500
             
+            # Sanitize filename to prevent header injection or browser errors
+            import re
+            safe_title = re.sub(r'[^a-zA-Z0-9_\-]', '_', project.project_title[:20])
+            filename = f'{project.code}_{safe_title}.pdf'
+            
             # Create BytesIO buffer from PDF content
             from io import BytesIO
             pdf_buffer = BytesIO(pdf_result['pdf_content'])
-            logging.info("✅ PDF generated successfully, sending file...")
+            logging.info(f"✅ PDF generated successfully, sending file: {filename}")
+            
             return send_file(pdf_buffer, as_attachment=True, 
-                            download_name=f'{project.code}_{project.project_title[:20]}.pdf',
+                            download_name=filename,
                             mimetype='application/pdf')
         
         elif format in ['docx', 'txt']:
@@ -1183,10 +1189,15 @@ def download_workspace_project(code, format):
             from io import BytesIO
             content_buffer = BytesIO(export_result['data'])
             
+            # Sanitize filename
+            import re
+            safe_title = re.sub(r'[^a-zA-Z0-9_\-]', '_', project.project_title[:20])
+            filename = f'{project.code}_{safe_title}.{format}'
+            
             mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' if format == 'docx' else 'text/plain'
-            logging.info(f"✅ {format.upper()} generated successfully, sending file...")
+            logging.info(f"✅ {format.upper()} generated successfully, sending file: {filename}")
             return send_file(content_buffer, as_attachment=True,
-                            download_name=f'{project.code}_{project.project_title[:20]}.{format}',
+                            download_name=filename,
                             mimetype=mimetype)
         
         else:
