@@ -1103,12 +1103,16 @@ def delete_workspace_project(code):
     """Delete a workspace project"""
     user_data = g.user
     
+    logging.info(f"🗑️ DELETE REQUEST: User {user_data.get('user_id')} attempting to delete project {code}")
+    
     from workspace_service import WorkspaceService
     success, message = WorkspaceService.delete_project(user_data['user_id'], code)
     
     if success:
+        logging.info(f"✅ DELETE SUCCESS: Project {code} deleted")
         flash('Project deleted successfully!', 'success')
     else:
+        logging.error(f"❌ DELETE FAILED: Project {code} - {message}")
         flash(message, 'danger')
     
     return redirect(url_for('workspace'))
@@ -1150,7 +1154,7 @@ def download_workspace_project(code, format):
     
     elif format in ['docx', 'txt']:
         export_result = export_service.export_content(
-            project.generation_text, 
+            content_to_download, 
             format, 
             title=project.project_title
         )
