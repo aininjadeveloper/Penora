@@ -1123,58 +1123,79 @@ def download_workspace_project(code, format):
     """Download workspace project in specified format"""
     user_data = g.user
     
-    from workspace_service import WorkspaceService
-    project = WorkspaceService.get_project_by_code(user_data['user_id'], code)
+    logging.info(f"📥 DOWNLOAD REQUEST: User {user_data.get('user_id')} requesting {format} for project {code}")
     
-    if not project:
-        flash('Project not found or access denied', 'danger')
-        return redirect(url_for('workspace'))
-    
-    # Ensure content exists
-    content_to_download = project.generation_text or ""
-    if not content_to_download:
-        content_to_download = " " # Empty space to prevent errors in document generators
+    try:
+        from workspace_service import WorkspaceService
+        project = WorkspaceService.get_project_by_code(user_data['user_id'], code)
         
-    if format == 'pdf':
-        pdf_result = pdf_service.generate_pdf(
-            title=project.project_title,
-            content=content_to_download
-        )
+        if not project:
+            logging.error(f"❌ DOWNLOAD FAILED: Project {code} not found")
+            return "Error: Project not found", 404
         
-        if not pdf_result.get('success'):
-            flash('Error generating PDF: ' + pdf_result.get('error', 'Unknown error'), 'danger')
-            return redirect(url_for('workspace'))
+        # Ensure content exists
+        content_to_download = project.generation_text or ""
+        if not content_to_download:
+            content_to_download = " " # Empty space to prevent errors in document generators
+            
+        logging.info(f"📄 Content length: {len(content_to_download)} chars")
+
+        if format == 'pdf':
+            # Import locally to avoid circular imports or initialization issues
+            from pdf_service import pdf_service
+            
+            logging.info("🔄 Generating PDF...")
+            pdf_result = pdf_service.generate_pdf(
+                title=project.project_title,
+                content=content_to_download
+            )
+            
+            if not pdf_result.get('success'):
+                error_msg = pdf_result.get('error', 'Unknown error')
+                logging.error(f"❌ PDF GENERATION FAILED: {error_msg}")
+                return f"Error generating PDF: {error_msg}", 500
+            
+            # Create BytesIO buffer from PDF content
+            from io import BytesIO
+            pdf_buffer = BytesIO(pdf_result['pdf_content'])
+            logging.info("✅ PDF generated successfully, sending file...")
+            return send_file(pdf_buffer, as_attachment=True, 
+                            download_name=f'{project.code}_{project.project_title[:20]}.pdf',
+                            mimetype='application/pdf')
         
-        # Create BytesIO buffer from PDF content
-        from io import BytesIO
-        pdf_buffer = BytesIO(pdf_result['pdf_content'])
-        return send_file(pdf_buffer, as_attachment=True, 
-                        download_name=f'{project.code}_{project.project_title[:20]}.pdf',
-                        mimetype='application/pdf')
-    
-    elif format in ['docx', 'txt']:
-        export_result = export_service.export_content(
-            content_to_download, 
-            format, 
-            title=project.project_title
-        )
+        elif format in ['docx', 'txt']:
+            # Import locally
+            from export_service import export_service
+            
+            logging.info(f"🔄 Generating {format.upper()}...")
+            export_result = export_service.export_content(
+                content_to_download, 
+                format, 
+                title=project.project_title
+            )
+            
+            if not export_result.get('success'):
+                error_msg = export_result.get('error', 'Unknown error')
+                logging.error(f"❌ {format.upper()} GENERATION FAILED: {error_msg}")
+                return f"Error generating {format}: {error_msg}", 500
+            
+            # Create BytesIO buffer from file content
+            from io import BytesIO
+            content_buffer = BytesIO(export_result['data'])
+            
+            mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' if format == 'docx' else 'text/plain'
+            logging.info(f"✅ {format.upper()} generated successfully, sending file...")
+            return send_file(content_buffer, as_attachment=True,
+                            download_name=f'{project.code}_{project.project_title[:20]}.{format}',
+                            mimetype=mimetype)
         
-        if not export_result.get('success'):
-            flash('Error generating file: ' + export_result.get('error', 'Unknown error'), 'danger')
-            return redirect(url_for('workspace'))
-        
-        # Create BytesIO buffer from file content
-        from io import BytesIO
-        content_buffer = BytesIO(export_result['data'])
-        
-        mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' if format == 'docx' else 'text/plain'
-        return send_file(content_buffer, as_attachment=True,
-                        download_name=f'{project.code}_{project.project_title[:20]}.{format}',
-                        mimetype=mimetype)
-    
-    else:
-        flash('Invalid download format', 'danger')
-        return redirect(url_for('workspace'))
+        else:
+            logging.error(f"❌ Invalid format requested: {format}")
+            return f"Error: Invalid format {format}", 400
+            
+    except Exception as e:
+        logging.exception(f"🔥 CRITICAL DOWNLOAD ERROR: {str(e)}")
+        return f"Server Error during download: {str(e)}", 500
 
 @app.route('/workspace/copy/<code>')
 @require_sukusuku_auth
