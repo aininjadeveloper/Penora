@@ -1209,6 +1209,24 @@ def download_workspace_project(code, format):
         logging.exception(f"🔥 CRITICAL DOWNLOAD ERROR: {str(e)}")
         return f"Server Error during download: {str(e)}", 500
 
+@app.route('/workspace/view/<code>')
+@require_sukusuku_auth
+def view_workspace_project(code):
+    """Get project details for viewing (AJAX endpoint)"""
+    user_data = g.user
+    
+    from workspace_service import WorkspaceService
+    project = WorkspaceService.get_project_by_code(user_data['user_id'], code)
+    
+    if not project:
+        return jsonify({'error': 'Project not found or access denied'}), 404
+    
+    return jsonify({
+        'title': project.project_title,
+        'content': project.generation_text,
+        'code': project.code
+    })
+
 @app.route('/workspace/copy/<code>')
 @require_sukusuku_auth
 def copy_workspace_code(code):

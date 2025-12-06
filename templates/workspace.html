@@ -202,8 +202,8 @@
     // View Project Function
     async function viewProject(code) {
         try {
-            // Using /workspace/copy endpoint as it returns the full content we need
-            const response = await fetch(`/workspace/copy/${code}`);
+            // Using /workspace/view endpoint
+            const response = await fetch(`/workspace/view/${code}`);
 
             if (response.ok) {
                 const data = await response.json();
