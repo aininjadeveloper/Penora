@@ -97,21 +97,21 @@
                                         <li>
                                             <a class="dropdown-item"
                                                 href="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"
-                                                download>
+                                                target="_blank">
                                                 <i class="fas fa-file-pdf me-2 text-danger"></i>PDF
                                             </a>
                                         </li>
                                         <li>
                                             <a class="dropdown-item"
                                                 href="{{ url_for('download_workspace_project', code=project.code, format='docx') }}"
-                                                download>
+                                                target="_blank">
                                                 <i class="fas fa-file-word me-2 text-primary"></i>DOCX
                                             </a>
                                         </li>
                                         <li>
                                             <a class="dropdown-item"
                                                 href="{{ url_for('download_workspace_project', code=project.code, format='txt') }}"
-                                                download>
+                                                target="_blank">
                                                 <i class="fas fa-file-alt me-2 text-muted"></i>TXT
                                             </a>
                                         </li>
