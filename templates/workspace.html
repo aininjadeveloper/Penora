@@ -69,27 +69,28 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <div class="btn-group w-100" role="group">
+                            <div class="d-flex justify-content-between">
                                 <button class="btn btn-sm btn-outline-info" onclick="viewProject('{{ project.code }}')"
                                     title="View Text">
                                     <i class="fas fa-eye"></i>
                                 </button>
+
                                 <a href="{{ url_for('edit_workspace_project', code=project.code) }}"
                                     class="btn btn-sm btn-outline-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
+
                                 <button class="btn btn-sm btn-outline-success"
                                     onclick="copyProjectText('{{ project.code }}')" title="Copy Generated Text">
                                     <i class="fas fa-copy"></i>
                                 </button>
 
-                                <div class="btn-group" role="group">
-                                    <button id="btnGroupDrop{{ loop.index }}" type="button"
-                                        class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false" title="Download">
                                         <i class="fas fa-download"></i>
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop{{ loop.index }}">
+                                    <ul class="dropdown-menu">
                                         <li><a class="dropdown-item"
                                                 href="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"><i
                                                     class="fas fa-file-pdf me-2"></i>PDF</a></li>
@@ -102,13 +103,13 @@
                                     </ul>
                                 </div>
 
-                                <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
-                                    onclick="if(confirm('Are you sure you want to delete this project?')) { document.getElementById('delete-form-{{ project.code }}').submit(); }">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <form id="delete-form-{{ project.code }}"
-                                    action="{{ url_for('delete_workspace_project', code=project.code) }}" method="POST"
-                                    style="display: none;"></form>
+                                <form action="{{ url_for('delete_workspace_project', code=project.code) }}"
+                                    method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to delete this project?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
