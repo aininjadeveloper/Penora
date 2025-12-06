@@ -10,7 +10,7 @@
                 <h1><i class="fas fa-pen me-2"></i>Start Writing</h1>
                 <p class="text-muted">Choose how you want to begin your writing journey</p>
             </div>
-            
+
             <!-- Writing Options -->
             <div class="row mb-4">
                 <div class="col-md-6 mb-3">
@@ -38,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Fresh Project Form -->
             <div id="freshForm" class="card" style="display: none;">
                 <div class="card-header">
@@ -49,29 +49,33 @@
                         <input type="hidden" name="writing_type" value="fresh">
                         <div class="mb-3">
                             <label for="prompt" class="form-label">What would you like to write about?</label>
-                            <textarea class="form-control" id="prompt" name="prompt" rows="4" 
-                                    placeholder="Describe your story, article, or any content you want to create..." required></textarea>
+                            <textarea class="form-control" id="prompt" name="prompt" rows="4"
+                                placeholder="Describe your story, article, or any content you want to create..."
+                                required></textarea>
                         </div>
-                        
+
                         <!-- AI Model Selection -->
                         <div class="mb-3">
                             <label for="model_type" class="form-label">AI Model</label>
                             <select class="form-select" id="model_type" name="model_type" onchange="updateCreditCost()">
-                                <option value="creative">Creative Prose - Best for stories, novels (1.5x Ku coins)</option>
+                                <option value="creative">Creative Prose - Best for stories, novels (1.5x Ku coins)
+                                </option>
                                 <option value="balanced" selected>Balanced - Quality and speed (1x Ku coins)</option>
                                 <option value="fast">Fast & Cheap - Quick generations (0.5x Ku coins)</option>
-                                <option value="summarize">Summarize / Fallback - Perfect for editing (0.3x Ku coins)</option>
+                                <option value="summarize">Summarize / Fallback - Perfect for editing (0.3x Ku coins)
+                                </option>
                             </select>
                             <div class="form-text">
                                 <i class="fas fa-lightbulb me-1"></i>
                                 Choose the model that best fits your writing needs
                             </div>
                         </div>
-                        
+
                         <!-- Output Length Selection -->
                         <div class="mb-3">
                             <label for="output_length" class="form-label">Output Length</label>
-                            <select class="form-select" id="output_length" name="output_length" onchange="updateCreditCost()">
+                            <select class="form-select" id="output_length" name="output_length"
+                                onchange="updateCreditCost()">
                                 <option value="short">Short (1 paragraph ~ 100-150 words)</option>
                                 <option value="medium" selected>Medium (1 page ~ 300-500 words)</option>
                                 <option value="long">Long (Full page ~ 500+ words)</option>
@@ -81,18 +85,20 @@
                                 Note: Page slider below overrides this setting for precise control
                             </div>
                         </div>
-                        
+
                         <!-- Page Count Slider -->
                         <div class="mb-4">
                             <label for="page_count" class="form-label">Number of Pages</label>
                             <div class="row align-items-center">
                                 <div class="col-9">
-                                    <input type="range" class="form-range" id="page_count" name="page_count" 
-                                           min="1" max="500" value="1" onchange="updateCreditCost(); syncPageSlider()" oninput="updateCreditCost(); syncPageSlider()">
+                                    <input type="range" class="form-range" id="page_count" name="page_count" min="1"
+                                        max="500" value="1" onchange="updateCreditCost(); syncPageSlider()"
+                                        oninput="updateCreditCost(); syncPageSlider()">
                                 </div>
                                 <div class="col-3">
-                                    <input type="number" class="form-control form-control-sm" id="page_input" 
-                                           min="1" max="500" value="1" onchange="syncPageInput(); updateCreditCost()" oninput="updateCreditCost()" style="font-size: 0.9rem;">
+                                    <input type="number" class="form-control form-control-sm" id="page_input" min="1"
+                                        max="500" value="1" onchange="syncPageInput(); updateCreditCost()"
+                                        oninput="updateCreditCost()" style="font-size: 0.9rem;">
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between text-muted small mt-1">
@@ -101,13 +107,15 @@
                             </div>
                             <div class="form-text">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Use slider or enter exact number. 1 page ≈ 500 words = 1 Ku coin. Large page counts may take longer to generate.
+                                Use slider or enter exact number. 1 page ≈ 500 words = 1 Ku coin. Large page counts may
+                                take longer to generate.
                             </div>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-muted">
-                                <i class="fas fa-coins me-1"></i>Total Cost: <span id="credit_cost" class="fw-bold text-warning">1 Ku coin</span>
+                                <i class="fas fa-coins me-1"></i>Total Cost: <span id="credit_cost"
+                                    class="fw-bold text-warning">1 Ku coin</span>
                                 <div class="small text-info mt-1" id="cost_breakdown" style="display: none;">
                                     <i class="fas fa-info-circle me-1"></i>
                                     <span id="breakdown_text"></span>
@@ -116,11 +124,12 @@
                             <div>
                                 <button type="button" class="btn btn-secondary me-2" onclick="resetForm()">Back</button>
                                 <button type="submit" class="btn btn-primary" id="generate_btn">
-                                    <i class="fas fa-magic me-2"></i><span id="generate_btn_text">Generate 1 Page (1 Ku coin)</span>
+                                    <i class="fas fa-magic me-2"></i><span id="generate_btn_text">Generate 1 Page (1 Ku
+                                        coin)</span>
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Loading State -->
                         <div id="loading_state" style="display: none;" class="text-center mt-3">
                             <div class="spinner-border text-primary me-2" role="status">
@@ -128,13 +137,14 @@
                             </div>
                             <span class="text-muted">
                                 <strong>Generating your content...</strong><br>
-                                <small>This may take a few moments, especially for larger page counts. Please wait.</small>
+                                <small>This may take a few moments, especially for larger page counts. Please
+                                    wait.</small>
                             </span>
                         </div>
                     </form>
                 </div>
             </div>
-            
+
             <!-- Existing Project Form -->
             <div id="existingForm" class="card" style="display: none;">
                 <div class="card-header">
@@ -143,18 +153,17 @@
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" onsubmit="return handleEnhanceSubmit(event)">
                         <input type="hidden" name="writing_type" value="existing">
-                        
+
                         <div class="mb-3">
                             <label for="project_file" class="form-label">Upload File</label>
-                            <input type="file" class="form-control" id="project_file" name="project_file" 
-                                   accept=".txt,.docx,.pdf,.html,.md,.rtf,.odt" 
-                                   onchange="analyzeFile()" required>
+                            <input type="file" class="form-control" id="project_file" name="project_file"
+                                accept=".txt,.docx,.pdf,.html,.md,.rtf,.odt" onchange="analyzeFile()" required>
                             <div class="form-text">
                                 <i class="fas fa-file-alt me-1"></i>
                                 Supported formats: TXT, DOCX, PDF, HTML, Markdown, RTF, ODT
                             </div>
                         </div>
-                        
+
                         <!-- File Analysis Preview -->
                         <div id="file_analysis" style="display: none;" class="mb-3">
                             <div class="card bg-light">
@@ -171,14 +180,15 @@
                                         <div class="col-md-6">
                                             <p class="mb-1"><strong>Pages:</strong> <span id="file_pages">-</span></p>
                                             <p class="mb-1"><strong>Words:</strong> <span id="file_words">-</span></p>
-                                            <p class="mb-1"><strong>Ku Coins Needed:</strong> 
+                                            <p class="mb-1"><strong>Ku Coins Needed:</strong>
                                                 <span id="file_credits" class="fw-bold text-warning">-</span>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="mt-2">
                                         <strong>Preview:</strong>
-                                        <div id="file_preview" class="text-muted small mt-1" style="font-family: monospace; max-height: 80px; overflow-y: auto;"></div>
+                                        <div id="file_preview" class="text-muted small mt-1"
+                                            style="font-family: monospace; max-height: 80px; overflow-y: auto;"></div>
                                     </div>
                                     <div id="credit_warning" class="alert alert-warning mt-2" style="display: none;">
                                         <i class="fas fa-exclamation-triangle me-2"></i>
@@ -187,26 +197,31 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- File Processing Instructions -->
                         <div class="mb-3">
-                            <label for="file_instruction" class="form-label">What would you like to do with this file?</label>
+                            <label for="file_instruction" class="form-label">What would you like to do with this
+                                file?</label>
                             <select class="form-select" id="file_instruction" name="file_instruction" required>
                                 <option value="">Select an option...</option>
                                 <option value="expand">Expand - Add more details and content</option>
                                 <option value="fine-tune">Fine-tune - Improve writing quality and style</option>
-                                <option value="convert to script">Convert to script - Transform into screenplay format</option>
+                                <option value="convert to script">Convert to script - Transform into screenplay format
+                                </option>
                                 <option value="summarize">Summarize - Create a concise summary</option>
                                 <option value="continue">Continue - Extend the story from where it ends</option>
                             </select>
                         </div>
-                        
+
                         <!-- AI Model Selection for File Processing -->
                         <div class="mb-3">
                             <label for="file_model_type" class="form-label">AI Model</label>
-                            <select class="form-select" id="file_model_type" name="model_type" onchange="updateFileCredits()">
-                                <option value="creative">Creative Prose - Best for expanding stories (1.5x Ku coins)</option>
-                                <option value="balanced" selected>Balanced - Quality editing and improvements (1x Ku coins)</option>
+                            <select class="form-select" id="file_model_type" name="model_type"
+                                onchange="updateFileCredits()">
+                                <option value="creative">Creative Prose - Best for expanding stories (1.5x Ku coins)
+                                </option>
+                                <option value="balanced" selected>Balanced - Quality editing and improvements (1x Ku
+                                    coins)</option>
                                 <option value="fast">Fast & Cheap - Quick processing (0.5x Ku coins)</option>
                                 <option value="summarize">Summarize / Fallback - Best for summaries (0.3x cost)</option>
                             </select>
@@ -215,23 +230,25 @@
                                 Model affects credit cost: Creative uses more, Fast uses less
                             </div>
                         </div>
-                        
 
-                        
+
+
                         <!-- Enhancement Examples -->
                         <div class="alert alert-info">
                             <h6><i class="fas fa-lightbulb me-2"></i>Enhancement Examples:</h6>
                             <ul class="mb-0">
                                 <li><strong>Expand:</strong> Add new scenes, develop characters, extend storylines</li>
                                 <li><strong>Fine-tune:</strong> Improve dialogue, fix pacing, enhance descriptions</li>
-                                <li><strong>Convert:</strong> Transform narrative to screenplay format with dialogue and directions</li>
+                                <li><strong>Convert:</strong> Transform narrative to screenplay format with dialogue and
+                                    directions</li>
                             </ul>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-muted">
                                 <i class="fas fa-coins me-1"></i>
-                                Cost: <span id="enhance_credit_cost" class="fw-bold text-warning">Select file to see cost</span>
+                                Cost: <span id="enhance_credit_cost" class="fw-bold text-warning">Select file to see
+                                    cost</span>
                             </div>
                             <div>
                                 <button type="button" class="btn btn-secondary me-2" onclick="resetForm()">Back</button>
@@ -241,7 +258,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Enhancement Loading State -->
                         <div id="enhance_loading_state" style="display: none;" class="text-center mt-3">
                             <div class="spinner-border text-primary me-2" role="status">
@@ -255,7 +272,7 @@
                     </form>
                 </div>
             </div>
-            
+
             <!-- Results Display -->
             {% if result %}
             <div id="generatedResults" class="card mt-4">
@@ -279,17 +296,18 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" onclick="downloadAs('pdf')">
-                                    <i class="fas fa-file-pdf me-2"></i>PDF
-                                </a></li>
+                                        <i class="fas fa-file-pdf me-2"></i>PDF
+                                    </a></li>
                                 <li><a class="dropdown-item" onclick="downloadAs('docx')">
-                                    <i class="fas fa-file-word me-2"></i>DOCX
-                                </a></li>
+                                        <i class="fas fa-file-word me-2"></i>DOCX
+                                    </a></li>
                                 <li><a class="dropdown-item" onclick="downloadAs('txt')">
-                                    <i class="fas fa-file-alt me-2"></i>TXT
-                                </a></li>
+                                        <i class="fas fa-file-alt me-2"></i>TXT
+                                    </a></li>
                             </ul>
                         </div>
-                        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#saveModal">
+                        <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
+                            data-bs-target="#saveModal">
                             <i class="fas fa-save me-1"></i>Save Custom Title
                         </button>
                     </div>
@@ -298,7 +316,7 @@
                     <div id="generatedContent" style="white-space: pre-wrap; line-height: 1.6;">{{ result }}</div>
                 </div>
             </div>
-            
+
             <!-- Save with Custom Title Modal -->
             <div class="modal fade" id="saveModal" tabindex="-1">
                 <div class="modal-dialog">
@@ -311,8 +329,8 @@
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label for="custom_title" class="form-label">Project Title</label>
-                                    <input type="text" class="form-control" id="custom_title" name="title" 
-                                           placeholder="Enter a custom title for your project..." required maxlength="200">
+                                    <input type="text" class="form-control" id="custom_title" name="title"
+                                        placeholder="Enter a custom title for your project..." required maxlength="200">
                                 </div>
                                 <input type="hidden" name="content" value="{{ result }}">
                             </div>
@@ -325,26 +343,26 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Auto-scroll to results -->
             {% if result %}
             <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Scroll to the generated results section
-                const resultsSection = document.getElementById('generatedResults');
-                if (resultsSection) {
-                    setTimeout(function() {
-                        resultsSection.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'start',
-                            inline: 'nearest'
-                        });
-                    }, 500); // Small delay to ensure page is fully loaded
-                }
-            });
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Scroll to the generated results section
+                    const resultsSection = document.getElementById('generatedResults');
+                    if (resultsSection) {
+                        setTimeout(function () {
+                            resultsSection.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start',
+                                inline: 'nearest'
+                            });
+                        }, 500); // Small delay to ensure page is fully loaded
+                    }
+                });
             </script>
             {% endif %}
-            
+
             <!-- Quick Actions -->
             <div class="row mt-4">
                 <div class="col-md-6">
@@ -363,196 +381,209 @@
                         <div class="card-body text-center">
                             <h6><i class="fas fa-coins me-2"></i>Your Credits</h6>
                             <p class="text-primary fw-bold">{{ credits }} Credits Remaining</p>
-                            {% if credits < 5 %}
-                            <div class="text-warning small mb-2">
+                            {% if credits < 5 %} <div class="text-warning small mb-2">
                                 <i class="fas fa-exclamation-triangle me-1"></i>Low credits remaining
-                            </div>
-                            {% endif %}
-                            <a href="{{ url_for('pricing') }}" class="btn btn-outline-warning btn-sm">
-                                Top Up Credits
-                            </a>
                         </div>
+                        {% endif %}
+                        <a href="{{ url_for('pricing') }}" class="btn btn-outline-warning btn-sm">
+                            Top Up Credits
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
+
 
 <script>
-function selectWritingType(type) {
-    // Hide all forms and reset cards
-    document.getElementById('freshForm').style.display = 'none';
-    document.getElementById('existingForm').style.display = 'none';
-    document.getElementById('freshCard').className = 'card h-100 border-secondary';
-    document.getElementById('existingCard').className = 'card h-100 border-secondary';
-    
-    if (type === 'fresh') {
-        document.getElementById('freshForm').style.display = 'block';
-        document.getElementById('freshCard').className = 'card h-100 border-primary';
-        // Initialize the credit cost display after form becomes visible
-        setTimeout(() => {
-            updateCreditCost();
-            console.log('Credit calculation initialized for fresh form');
-        }, 100);
-    } else if (type === 'existing') {
-        document.getElementById('existingForm').style.display = 'block';
-        document.getElementById('existingCard').className = 'card h-100 border-primary';
+    function selectWritingType(type) {
+        // Hide all forms and reset cards
+        document.getElementById('freshForm').style.display = 'none';
+        document.getElementById('existingForm').style.display = 'none';
+        document.getElementById('freshCard').className = 'card h-100 border-secondary';
+        document.getElementById('existingCard').className = 'card h-100 border-secondary';
+
+        if (type === 'fresh') {
+            const freshForm = document.getElementById('freshForm');
+            freshForm.style.display = 'block';
+            document.getElementById('freshCard').className = 'card h-100 border-primary';
+
+            // Auto-scroll to form
+            setTimeout(() => {
+                freshForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+
+            // Initialize the credit cost display after form becomes visible
+            setTimeout(() => {
+                updateCreditCost();
+                console.log('Credit calculation initialized for fresh form');
+            }, 100);
+        } else if (type === 'existing') {
+            const existingForm = document.getElementById('existingForm');
+            existingForm.style.display = 'block';
+            document.getElementById('existingCard').className = 'card h-100 border-primary';
+
+            // Auto-scroll to form
+            setTimeout(() => {
+                existingForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
     }
-}
 
-function resetForm() {
-    document.getElementById('freshForm').style.display = 'none';
-    document.getElementById('existingForm').style.display = 'none';
-    document.getElementById('freshCard').className = 'card h-100 border-primary';
-    document.getElementById('existingCard').className = 'card h-100 border-secondary';
-    
-    // Reset file analysis
-    document.getElementById('file_analysis').style.display = 'none';
-    document.getElementById('enhance_btn').disabled = true;
-    document.getElementById('enhance_btn_text').textContent = 'Select File First';
-}
+    function resetForm() {
+        document.getElementById('freshForm').style.display = 'none';
+        document.getElementById('existingForm').style.display = 'none';
+        document.getElementById('freshCard').className = 'card h-100 border-primary';
+        document.getElementById('existingCard').className = 'card h-100 border-secondary';
 
-let fileAnalysisData = null;
-
-function analyzeFile() {
-    const fileInput = document.getElementById('project_file');
-    const file = fileInput.files[0];
-    
-    if (!file) {
+        // Reset file analysis
         document.getElementById('file_analysis').style.display = 'none';
         document.getElementById('enhance_btn').disabled = true;
         document.getElementById('enhance_btn_text').textContent = 'Select File First';
-        return;
     }
-    
-    const analysisDiv = document.getElementById('file_analysis');
-    analysisDiv.style.display = 'block';
-    
-    // Show loading state
-    document.getElementById('file_name').textContent = 'Analyzing...';
-    document.getElementById('file_size').textContent = 'Loading...';
-    document.getElementById('file_format').textContent = 'Loading...';
-    document.getElementById('file_pages').textContent = 'Loading...';
-    document.getElementById('file_words').textContent = 'Loading...';
-    document.getElementById('file_credits').textContent = 'Loading...';
-    document.getElementById('file_preview').textContent = 'Analyzing file content...';
-    
-    // Prepare form data
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('model_type', document.getElementById('file_model_type').value);
-    
-    // Call analysis API
-    fetch('/api/analyze-file', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            fileAnalysisData = data;
-            updateFileAnalysisDisplay(data);
-            updateFileCredits();
-        } else {
-            showFileError(data.error);
+
+    let fileAnalysisData = null;
+
+    function analyzeFile() {
+        const fileInput = document.getElementById('project_file');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            document.getElementById('file_analysis').style.display = 'none';
+            document.getElementById('enhance_btn').disabled = true;
+            document.getElementById('enhance_btn_text').textContent = 'Select File First';
+            return;
         }
-    })
-    .catch(error => {
-        console.error('File analysis error:', error);
-        showFileError('Failed to analyze file. Please try again.');
-    });
-}
 
-function updateFileAnalysisDisplay(data) {
-    document.getElementById('file_name').textContent = data.filename;
-    document.getElementById('file_size').textContent = data.file_size;
-    document.getElementById('file_format').textContent = data.file_format;
-    document.getElementById('file_pages').textContent = data.pages;
-    document.getElementById('file_words').textContent = data.word_count.toLocaleString();
-    document.getElementById('file_credits').textContent = data.final_credits + ' Ku coins';
-    document.getElementById('file_preview').textContent = data.preview;
-    
-    // Check if user can afford processing
-    const warningDiv = document.getElementById('credit_warning');
-    if (data.can_process) {
-        warningDiv.style.display = 'none';
-        document.getElementById('enhance_btn').disabled = false;
-    } else {
+        const analysisDiv = document.getElementById('file_analysis');
+        analysisDiv.style.display = 'block';
+
+        // Show loading state
+        document.getElementById('file_name').textContent = 'Analyzing...';
+        document.getElementById('file_size').textContent = 'Loading...';
+        document.getElementById('file_format').textContent = 'Loading...';
+        document.getElementById('file_pages').textContent = 'Loading...';
+        document.getElementById('file_words').textContent = 'Loading...';
+        document.getElementById('file_credits').textContent = 'Loading...';
+        document.getElementById('file_preview').textContent = 'Analyzing file content...';
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('model_type', document.getElementById('file_model_type').value);
+
+        // Call analysis API
+        fetch('/api/analyze-file', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fileAnalysisData = data;
+                    updateFileAnalysisDisplay(data);
+                    updateFileCredits();
+                } else {
+                    showFileError(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('File analysis error:', error);
+                showFileError('Failed to analyze file. Please try again.');
+            });
+    }
+
+    function updateFileAnalysisDisplay(data) {
+        document.getElementById('file_name').textContent = data.filename;
+        document.getElementById('file_size').textContent = data.file_size;
+        document.getElementById('file_format').textContent = data.file_format;
+        document.getElementById('file_pages').textContent = data.pages;
+        document.getElementById('file_words').textContent = data.word_count.toLocaleString();
+        document.getElementById('file_credits').textContent = data.final_credits + ' Ku coins';
+        document.getElementById('file_preview').textContent = data.preview;
+
+        // Check if user can afford processing
+        const warningDiv = document.getElementById('credit_warning');
+        if (data.can_process) {
+            warningDiv.style.display = 'none';
+            document.getElementById('enhance_btn').disabled = false;
+        } else {
+            warningDiv.style.display = 'block';
+            document.getElementById('warning_message').textContent =
+                `You need ${data.final_credits} Ku coins but only have ${data.user_credits} Ku coins. Please top up your Ku coins first.`;
+            document.getElementById('enhance_btn').disabled = true;
+        }
+    }
+
+    function updateFileCredits() {
+        if (!fileAnalysisData) return;
+
+        const modelType = document.getElementById('file_model_type').value;
+        const modelMultipliers = {
+            'creative': 1.5,
+            'balanced': 1.0,
+            'fast': 0.5,
+            'summarize': 0.3
+        };
+
+        const multiplier = modelMultipliers[modelType] || 1.0;
+        const finalCredits = Math.max(1, Math.floor(fileAnalysisData.base_credits * multiplier));
+
+        // Update displayed Ku coins
+        document.getElementById('file_credits').textContent = finalCredits + ' Ku coins';
+        document.getElementById('enhance_credit_cost').textContent = finalCredits + ' Ku coins';
+
+        // Update button text
+        const canAfford = fileAnalysisData.user_credits >= finalCredits;
+        if (canAfford) {
+            document.getElementById('enhance_btn').disabled = false;
+            document.getElementById('enhance_btn_text').textContent = `Process File (${finalCredits} Ku coin${finalCredits > 1 ? 's' : ''})`;
+            document.getElementById('credit_warning').style.display = 'none';
+        } else {
+            document.getElementById('enhance_btn').disabled = true;
+            document.getElementById('enhance_btn_text').textContent = 'Insufficient Ku coins';
+            document.getElementById('credit_warning').style.display = 'block';
+            document.getElementById('warning_message').textContent =
+                `You need ${finalCredits} Ku coins but only have ${fileAnalysisData.user_credits} Ku coins.`;
+        }
+    }
+
+    function showFileError(message) {
+        document.getElementById('file_name').textContent = 'Error';
+        document.getElementById('file_size').textContent = '-';
+        document.getElementById('file_format').textContent = '-';
+        document.getElementById('file_pages').textContent = '-';
+        document.getElementById('file_words').textContent = '-';
+        document.getElementById('file_credits').textContent = '-';
+        document.getElementById('file_preview').textContent = message;
+
+        document.getElementById('enhance_btn').disabled = true;
+        document.getElementById('enhance_btn_text').textContent = 'File Error';
+
+        // Show error in warning div
+        const warningDiv = document.getElementById('credit_warning');
         warningDiv.style.display = 'block';
-        document.getElementById('warning_message').textContent = 
-            `You need ${data.final_credits} Ku coins but only have ${data.user_credits} Ku coins. Please top up your Ku coins first.`;
-        document.getElementById('enhance_btn').disabled = true;
+        warningDiv.className = 'alert alert-danger mt-2';
+        document.getElementById('warning_message').textContent = message;
     }
-}
 
-function updateFileCredits() {
-    if (!fileAnalysisData) return;
-    
-    const modelType = document.getElementById('file_model_type').value;
-    const modelMultipliers = {
-        'creative': 1.5,
-        'balanced': 1.0, 
-        'fast': 0.5,
-        'summarize': 0.3
-    };
-    
-    const multiplier = modelMultipliers[modelType] || 1.0;
-    const finalCredits = Math.max(1, Math.floor(fileAnalysisData.base_credits * multiplier));
-    
-    // Update displayed Ku coins
-    document.getElementById('file_credits').textContent = finalCredits + ' Ku coins';
-    document.getElementById('enhance_credit_cost').textContent = finalCredits + ' Ku coins';
-    
-    // Update button text
-    const canAfford = fileAnalysisData.user_credits >= finalCredits;
-    if (canAfford) {
-        document.getElementById('enhance_btn').disabled = false;
-        document.getElementById('enhance_btn_text').textContent = `Process File (${finalCredits} Ku coin${finalCredits > 1 ? 's' : ''})`;
-        document.getElementById('credit_warning').style.display = 'none';
-    } else {
-        document.getElementById('enhance_btn').disabled = true;
-        document.getElementById('enhance_btn_text').textContent = 'Insufficient Ku coins';
-        document.getElementById('credit_warning').style.display = 'block';
-        document.getElementById('warning_message').textContent = 
-            `You need ${finalCredits} Ku coins but only have ${fileAnalysisData.user_credits} Ku coins.`;
+    function copyToClipboard() {
+        const content = document.getElementById('generatedContent').textContent;
+        navigator.clipboard.writeText(content).then(function () {
+            showToast('Content copied to clipboard!', 'success');
+        });
     }
-}
 
-function showFileError(message) {
-    document.getElementById('file_name').textContent = 'Error';
-    document.getElementById('file_size').textContent = '-';
-    document.getElementById('file_format').textContent = '-';
-    document.getElementById('file_pages').textContent = '-';
-    document.getElementById('file_words').textContent = '-';
-    document.getElementById('file_credits').textContent = '-';
-    document.getElementById('file_preview').textContent = message;
-    
-    document.getElementById('enhance_btn').disabled = true;
-    document.getElementById('enhance_btn_text').textContent = 'File Error';
-    
-    // Show error in warning div
-    const warningDiv = document.getElementById('credit_warning');
-    warningDiv.style.display = 'block';
-    warningDiv.className = 'alert alert-danger mt-2';
-    document.getElementById('warning_message').textContent = message;
-}
+    function editDirectly() {
+        const content = document.getElementById('generatedContent').textContent;
+        const title = 'Generated Content - {{ prompt[:30] if prompt else "Untitled" }}';
 
-function copyToClipboard() {
-    const content = document.getElementById('generatedContent').textContent;
-    navigator.clipboard.writeText(content).then(function() {
-        showToast('Content copied to clipboard!', 'success');
-    });
-}
-
-function editDirectly() {
-    const content = document.getElementById('generatedContent').textContent;
-    const title = 'Generated Content - {{ prompt[:30] if prompt else "Untitled" }}';
-    
-    // Create edit modal
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.innerHTML = `
+        // Create edit modal
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.innerHTML = `
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form method="POST" action="/workspace/save">
@@ -561,6 +592,12 @@ function editDirectly() {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
+                        {% if project_code %}
+                        <div class="alert alert-info py-2">
+                             <small><i class="fas fa-info-circle me-1"></i>Updating existing project</small>
+                        </div>
+                        <input type="hidden" name="code" value="{{ project_code }}">
+                        {% endif %}
                         <div class="mb-3">
                             <label for="edit_title" class="form-label">Title</label>
                             <input type="text" class="form-control" id="edit_title" name="title" value="${title}" required maxlength="200">
@@ -578,72 +615,73 @@ function editDirectly() {
             </div>
         </div>
     `;
-    
-    document.body.appendChild(modal);
-    const bootstrapModal = new bootstrap.Modal(modal);
-    bootstrapModal.show();
-    modal.addEventListener('hidden.bs.modal', () => modal.remove());
-}
 
-function downloadAs(format) {
-    const content = document.getElementById('generatedContent').textContent;
-    const title = '{{ prompt[:30] if prompt else "Generated_Content" }}';
-    
-    // Create a temporary form to submit download request
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/download-content';
-    form.style.display = 'none';
-    
-    const titleInput = document.createElement('input');
-    titleInput.name = 'title';
-    titleInput.value = title;
-    
-    const contentInput = document.createElement('input');
-    contentInput.name = 'content';
-    contentInput.value = content;
-    
-    const formatInput = document.createElement('input');
-    formatInput.name = 'format';
-    formatInput.value = format;
-    
-    form.appendChild(titleInput);
-    form.appendChild(contentInput);
-    form.appendChild(formatInput);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-}
+        document.body.appendChild(modal);
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+        modal.addEventListener('hidden.bs.modal', () => modal.remove());
+    }
 
-function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-    toast.innerHTML = `
+    function downloadAs(format) {
+        const content = document.getElementById('generatedContent').textContent;
+        const title = '{{ prompt[:30] if prompt else "Generated_Content" }}';
+
+        // Create a temporary form to submit download request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/download-content';
+        form.style.display = 'none';
+
+        const titleInput = document.createElement('input');
+        titleInput.name = 'title';
+        titleInput.value = title;
+
+        const contentInput = document.createElement('input');
+        contentInput.name = 'content';
+        contentInput.value = content;
+
+        const formatInput = document.createElement('input');
+        formatInput.name = 'format';
+        formatInput.value = format;
+
+        form.appendChild(titleInput);
+        form.appendChild(contentInput);
+        form.appendChild(formatInput);
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+        toast.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
-}
 
-function updateCreditCost() {
-    const pageCountElement = document.getElementById('page_count');
-    const modelTypeElement = document.getElementById('model_type');
-    const creditCostElement = document.getElementById('credit_cost');
-    const generateBtn = document.getElementById('generate_btn');
-    const generateBtnText = document.getElementById('generate_btn_text');
-    
-    // Check if essential elements exist
-    if (!pageCountElement || !modelTypeElement || !creditCostElement || !generateBtn || !generateBtnText) {
-        return;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
     }
-    
-    const pageCount = parseInt(pageCountElement.value) || 1;
-    const modelType = modelTypeElement.value;
-    const userCredits = {{ credits }};
-    
+
+    function updateCreditCost() {
+        const pageCountElement = document.getElementById('page_count');
+        const modelTypeElement = document.getElementById('model_type');
+        const creditCostElement = document.getElementById('credit_cost');
+        const generateBtn = document.getElementById('generate_btn');
+        const generateBtnText = document.getElementById('generate_btn_text');
+
+        // Check if essential elements exist
+        if (!pageCountElement || !modelTypeElement || !creditCostElement || !generateBtn || !generateBtnText) {
+            return;
+        }
+
+        const pageCount = parseInt(pageCountElement.value) || 1;
+        const modelType = modelTypeElement.value;
+        const userCredits = {{ credits }
+    };
+
     // Model multipliers - Ku coin pricing system
     const modelMultipliers = {
         'creative': 1.5,  // Creative Prose (1.5x cost)
@@ -651,18 +689,18 @@ function updateCreditCost() {
         'fast': 0.5,      // Fast & Cheap (0.5x cost)
         'summarize': 0.3  // Summarize / Fallback (0.3x cost)
     };
-    
+
     // Calculate Ku coins needed: 1 page = 1 Ku coin base, then apply model multiplier
     const multiplier = modelMultipliers[modelType] || 1.0;
     const kuCoinsNeeded = Math.max(1, Math.ceil(pageCount * multiplier));
-    
+
     // Format display text
     const pageText = pageCount + (pageCount === 1 ? ' Page' : ' Pages');
     const kuCoinText = kuCoinsNeeded + (kuCoinsNeeded === 1 ? ' Ku coin' : ' Ku coins');
-    
+
     // Update cost display
     creditCostElement.textContent = kuCoinText;
-    
+
     // Show breakdown if model has multiplier
     const costBreakdown = document.getElementById('cost_breakdown');
     const breakdownText = document.getElementById('breakdown_text');
@@ -672,13 +710,13 @@ function updateCreditCost() {
     } else if (costBreakdown) {
         costBreakdown.style.display = 'none';
     }
-    
+
     // Update number input to match slider
     const pageInputElement = document.getElementById('page_input');
     if (pageInputElement && pageInputElement.value != pageCount) {
         pageInputElement.value = pageCount;
     }
-    
+
     // Update button based on available Ku coins
     if (kuCoinsNeeded > userCredits) {
         generateBtn.disabled = true;
@@ -691,103 +729,103 @@ function updateCreditCost() {
     }
 }
 
-function syncPageInput() {
-    const pageInput = document.getElementById('page_input');
-    const pageSlider = document.getElementById('page_count');
-    
-    if (pageInput && pageSlider) {
-        let value = parseInt(pageInput.value);
-        if (value < 1) value = 1;
-        if (value > 500) value = 500;
-        
-        pageInput.value = value;
-        pageSlider.value = value;
-        updateCreditCost();
+    function syncPageInput() {
+        const pageInput = document.getElementById('page_input');
+        const pageSlider = document.getElementById('page_count');
+
+        if (pageInput && pageSlider) {
+            let value = parseInt(pageInput.value);
+            if (value < 1) value = 1;
+            if (value > 500) value = 500;
+
+            pageInput.value = value;
+            pageSlider.value = value;
+            updateCreditCost();
+        }
     }
-}
 
-function syncPageSlider() {
-    const pageInput = document.getElementById('page_input');
-    const pageSlider = document.getElementById('page_count');
-    
-    if (pageInput && pageSlider) {
-        pageInput.value = pageSlider.value;
+    function syncPageSlider() {
+        const pageInput = document.getElementById('page_input');
+        const pageSlider = document.getElementById('page_count');
+
+        if (pageInput && pageSlider) {
+            pageInput.value = pageSlider.value;
+        }
     }
-}
 
-function handleFormSubmit(event) {
-    showLoadingState();
-    return true; // Allow form to submit
-}
-
-function showLoadingState() {
-    const generateBtn = document.getElementById('generate_btn');
-    const loadingState = document.getElementById('loading_state');
-    
-    if (generateBtn && loadingState) {
-        // Disable button and show loading
-        generateBtn.disabled = true;
-        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
-        loadingState.style.display = 'block';
-        
-        // Scroll to loading indicator
-        loadingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    function handleFormSubmit(event) {
+        showLoadingState();
+        return true; // Allow form to submit
     }
-}
 
-function handleEnhanceSubmit(event) {
-    showEnhanceLoadingState();
-    return true; // Allow form to submit
-}
+    function showLoadingState() {
+        const generateBtn = document.getElementById('generate_btn');
+        const loadingState = document.getElementById('loading_state');
 
-function showEnhanceLoadingState() {
-    const enhanceBtn = document.getElementById('enhance_btn');
-    const enhanceLoadingState = document.getElementById('enhance_loading_state');
-    
-    if (enhanceBtn && enhanceLoadingState) {
-        // Disable button and show loading
-        enhanceBtn.disabled = true;
-        enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enhancing...';
-        enhanceLoadingState.style.display = 'block';
-        
-        // Scroll to loading indicator
-        enhanceLoadingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (generateBtn && loadingState) {
+            // Disable button and show loading
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            loadingState.style.display = 'block';
+
+            // Scroll to loading indicator
+            loadingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
-}
 
-function showFreshProject() {
-    const homeSection = document.getElementById('homeSection');
-    const freshForm = document.getElementById('freshForm');
-    if (homeSection && freshForm) {
-        homeSection.style.display = 'none';
-        freshForm.style.display = 'block';
+    function handleEnhanceSubmit(event) {
+        showEnhanceLoadingState();
+        return true; // Allow form to submit
     }
-}
 
-// Initialize on page load when fresh form is shown
-document.addEventListener('DOMContentLoaded', function() {
-    // Set up event listeners when forms become visible
-    const freshCard = document.getElementById('freshCard');
-    const existingCard = document.getElementById('existingCard');
-    
-    if (freshCard) {
-        freshCard.addEventListener('click', function() {
-            setTimeout(function() {
-                updateCreditCost();
-                // Sync slider and input
-                const pageSlider = document.getElementById('page_count');
-                const pageInput = document.getElementById('page_input');
-                if (pageSlider) {
-                    pageSlider.addEventListener('input', syncPageSlider);
-                }
-                if (pageInput) {
-                    pageInput.addEventListener('input', syncPageInput);
-                }
-                // Initialize display
-                updateCreditCost();
-            }, 100);
-        });
+    function showEnhanceLoadingState() {
+        const enhanceBtn = document.getElementById('enhance_btn');
+        const enhanceLoadingState = document.getElementById('enhance_loading_state');
+
+        if (enhanceBtn && enhanceLoadingState) {
+            // Disable button and show loading
+            enhanceBtn.disabled = true;
+            enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enhancing...';
+            enhanceLoadingState.style.display = 'block';
+
+            // Scroll to loading indicator
+            enhanceLoadingState.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
-})
+
+    function showFreshProject() {
+        const homeSection = document.getElementById('homeSection');
+        const freshForm = document.getElementById('freshForm');
+        if (homeSection && freshForm) {
+            homeSection.style.display = 'none';
+            freshForm.style.display = 'block';
+        }
+    }
+
+    // Initialize on page load when fresh form is shown
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set up event listeners when forms become visible
+        const freshCard = document.getElementById('freshCard');
+        const existingCard = document.getElementById('existingCard');
+
+        if (freshCard) {
+            freshCard.addEventListener('click', function () {
+                setTimeout(function () {
+                    updateCreditCost();
+                    // Sync slider and input
+                    const pageSlider = document.getElementById('page_count');
+                    const pageInput = document.getElementById('page_input');
+                    if (pageSlider) {
+                        pageSlider.addEventListener('input', syncPageSlider);
+                    }
+                    if (pageInput) {
+                        pageInput.addEventListener('input', syncPageInput);
+                    }
+                    // Initialize display
+                    updateCreditCost();
+                }, 100);
+            });
+        }
+    });
 </script>
 {% endblock %}

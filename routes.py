@@ -1014,7 +1014,7 @@ def workspace():
 
 @app.route('/workspace/save', methods=['POST'])
 def save_to_workspace():
-    """Save generation to workspace manually"""
+    """Save generation to workspace OR update existing project"""
     user_data = get_user_data()
     
     if user_data is None:
@@ -1023,23 +1023,38 @@ def save_to_workspace():
     
     title = request.form.get('title', '').strip()
     content = request.form.get('content', '').strip()
+    project_code = request.form.get('code', '').strip()
     
     if not title or not content:
         flash('Title and content are required', 'danger')
         return redirect(request.referrer or url_for('workspace'))
     
     from workspace_service import WorkspaceService
-    success, project, message = WorkspaceService.save_generation(
-        user_data['user_id'], 
-        title, 
-        content
-    )
     
-    if success and project:
-        project_code = getattr(project, 'code', 'N/A')
-        flash(f'Project saved successfully! Code: {project_code}', 'success')
+    if project_code:
+        # Update existing project
+        success, project, message = WorkspaceService.update_project(
+            user_data['user_id'], 
+            project_code,
+            title, 
+            content
+        )
+        if success:
+             flash('Project updated successfully!', 'success')
+        else:
+             flash(message, 'danger')
     else:
-        flash(message, 'danger')
+        # Create new project
+        success, project, message = WorkspaceService.save_generation(
+            user_data['user_id'], 
+            title, 
+            content
+        )
+        if success and project:
+            project_code = getattr(project, 'code', 'N/A')
+            flash(f'Project saved successfully! Code: {project_code}', 'success')
+        else:
+            flash(message, 'danger')
     
     return redirect(url_for('workspace'))
 
@@ -1111,10 +1126,15 @@ def download_workspace_project(code, format):
         flash('Project not found or access denied', 'danger')
         return redirect(url_for('workspace'))
     
+    # Ensure content exists
+    content_to_download = project.generation_text or ""
+    if not content_to_download:
+        content_to_download = " " # Empty space to prevent errors in document generators
+        
     if format == 'pdf':
         pdf_result = pdf_service.generate_pdf(
             title=project.project_title,
-            content=project.generation_text
+            content=content_to_download
         )
         
         if not pdf_result.get('success'):
@@ -1657,11 +1677,28 @@ def sudowrite_brainstorm():
                 remaining_credits = user_data['credits'] - 1
                 user_data['credits'] = remaining_credits
                 
+                # Parse content into list
+                import re
+                raw_content = result['content']
+                # Split by newlines and clean up
+                content_list = []
+                for line in raw_content.split('\n'):
+                    line = line.strip()
+                    if line:
+                        # Remove leading numbers/bullets (e.g. "1.", "1)", "-", "•")
+                        clean_line = re.sub(r'^(\d+[\.\)]|\-|•)\s*', '', line)
+                        if clean_line:
+                            content_list.append(clean_line)
+                
+                # If parsing failed to produce list, fallback to raw, but ensure list format for template
+                if not content_list:
+                    content_list = [raw_content]
+                
                 flash(f'Generated {count} {category} ideas! 1 credit used.', 'success')
                 return render_template('sudowrite_tools.html', 
                                      user_data=user_data, 
                                      credits=remaining_credits,
-                                     results=[{'type': 'brainstorm', 'content': result['content'], 'model_used': result['model_used']}])
+                                     results=[{'type': 'brainstorm', 'content': content_list, 'model_used': result['model_used']}])
             else:
                 flash('Error processing credits. Please try again.', 'danger')
         else:
