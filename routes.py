@@ -1685,8 +1685,8 @@ def sudowrite_brainstorm():
                 for line in raw_content.split('\n'):
                     line = line.strip()
                     if line:
-                        # Remove leading numbers/bullets (e.g. "1.", "1)", "-", "•")
-                        clean_line = re.sub(r'^(\d+[\.\)]|\-|•)\s*', '', line)
+                        # Remove leading numbers/bullets (e.g. "1.", "1)", "-", "\u2022")
+                        clean_line = re.sub(r'^(\d+[\.\)]|\-|[\u2022])\s*', '', line)
                         if clean_line:
                             content_list.append(clean_line)
                 
