@@ -88,19 +88,34 @@
 
                             <!-- Download & Delete Actions -->
                             <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"
-                                        class="btn btn-outline-secondary" download title="Download PDF">
-                                        <i class="fas fa-file-pdf"></i> PDF
-                                    </a>
-                                    <a href="{{ url_for('download_workspace_project', code=project.code, format='docx') }}"
-                                        class="btn btn-outline-secondary" download title="Download DOCX">
-                                        <i class="fas fa-file-word"></i> DOCX
-                                    </a>
-                                    <a href="{{ url_for('download_workspace_project', code=project.code, format='txt') }}"
-                                        class="btn btn-outline-secondary" download title="Download TXT">
-                                        <i class="fas fa-file-alt"></i> TXT
-                                    </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-download me-1"></i> Download
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item"
+                                                href="{{ url_for('download_workspace_project', code=project.code, format='pdf') }}"
+                                                download>
+                                                <i class="fas fa-file-pdf me-2 text-danger"></i>PDF
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                                href="{{ url_for('download_workspace_project', code=project.code, format='docx') }}"
+                                                download>
+                                                <i class="fas fa-file-word me-2 text-primary"></i>DOCX
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                                href="{{ url_for('download_workspace_project', code=project.code, format='txt') }}"
+                                                download>
+                                                <i class="fas fa-file-alt me-2 text-muted"></i>TXT
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
 
                                 <form action="{{ url_for('delete_workspace_project', code=project.code) }}"
