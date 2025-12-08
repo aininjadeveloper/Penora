@@ -315,6 +315,12 @@
                 throw new Error(errorMsg);
             }
 
+            // Check if response is HTML (login page or error)
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('text/html')) {
+                throw new Error('Server returned HTML instead of file. You may need to log in again.');
+            }
+
             // Get the blob
             const blob = await response.blob();
 

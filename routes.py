@@ -1123,6 +1123,10 @@ def download_workspace_project(code, format):
     """Download workspace project in specified format"""
     user_data = g.user
     
+    if not user_data:
+        logging.error("❌ DOWNLOAD FAILED: User not authenticated")
+        return "Error: User not authenticated", 401
+
     logging.info(f"📥 DOWNLOAD REQUEST: User {user_data.get('user_id')} requesting {format} for project {code}")
     
     try:
