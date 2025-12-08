@@ -295,8 +295,14 @@
     }
     // Handle Download Function - Proper file download with blob handling
     function handleDownload(event, url, filename) {
-        // Simple direct download - works like ChatGPT/Gemini
-        window.location.href = url;
+        // Break out of iframe and download in parent window
+        // This bypasses iframe sandbox restrictions completely
+        try {
+            window.top.location.href = url;
+        } catch (e) {
+            // Fallback if cross-origin prevents access to window.top
+            window.location.href = url;
+        }
     }
 </script>
 {% endblock %}
