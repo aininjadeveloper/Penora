@@ -294,70 +294,17 @@
         }
     }
     // Handle Download Function
-    async function handleDownload(event, url, filename) {
+    // Handle Download Function
+    function handleDownload(event, url, filename) {
         event.preventDefault();
 
-        // Show starting toast
         if (typeof showToast === 'function') {
             showToast('Starting download...', 'info');
         }
 
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                // Try to get error message
-                let errorMsg = 'Download failed';
-                try {
-                    const text = await response.text();
-                    if (text) errorMsg = text;
-                } catch (e) { }
-                throw new Error(errorMsg);
-            }
-
-            // Check if response is HTML (login page or error)
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('text/html')) {
-                throw new Error('Server returned HTML instead of file. You may need to log in again.');
-            }
-
-            // Get the blob
-            const blob = await response.blob();
-
-            // Create object URL
-            const downloadUrl = window.URL.createObjectURL(blob);
-
-            // Create temporary link and click it
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = downloadUrl;
-
-            // Use filename from header if available, else fallback
-            const contentDisposition = response.headers.get('Content-Disposition');
-            let finalFilename = filename;
-            if (contentDisposition) {
-                const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-                if (filenameMatch && filenameMatch[1]) {
-                    finalFilename = filenameMatch[1];
-                }
-            }
-            a.download = finalFilename;
-
-            document.body.appendChild(a);
-            a.click();
-
-            // Cleanup
-            window.URL.revokeObjectURL(downloadUrl);
-            document.body.removeChild(a);
-
-            if (typeof showToast === 'function') {
-                showToast('Download complete!', 'success');
-            }
-
-        } catch (error) {
-            console.error('Download error:', error);
-            alert('Download failed: ' + error.message);
-        }
+        // Use direct navigation to force browser download handling
+        // This bypasses potential CORS/iframe blob restrictions
+        window.location.href = url;
     }
 </script>
 {% endblock %}
