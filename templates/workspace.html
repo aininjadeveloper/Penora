@@ -295,15 +295,13 @@
     }
     // Handle Download Function - Proper file download with blob handling
     function handleDownload(event, url, filename) {
-        // Create a temporary anchor tag with download attribute
-        // This method works in sandboxed iframes
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename || 'download';
-        a.target = '_parent'; // Open in parent frame
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Open in a completely new window (not sandboxed)
+        // Using noopener creates independent context
+        const downloadWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!downloadWindow) {
+            // Popup blocked - show message
+            alert('Please allow popups for downloads to work. Then try again.');
+        }
     }
 </script>
 {% endblock %}
