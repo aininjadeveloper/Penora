@@ -1631,6 +1631,9 @@ def download_content():
         clean_title = clean_title[:30]  # Limit filename length
         
         if format_type == 'pdf':
+            # Import locally to avoid potential scope/init issues
+            from pdf_service import pdf_service
+            
             pdf_result = pdf_service.generate_pdf(title=title, content=content)
             if pdf_result.get('success'):
                 from io import BytesIO
@@ -1643,6 +1646,9 @@ def download_content():
                 return redirect(url_for('start_writing'))
         
         elif format_type in ['docx', 'txt']:
+            # Import locally
+            from export_service import export_service
+            
             export_result = export_service.export_content(content, format_type, title=title)
             if export_result.get('success'):
                 from io import BytesIO
