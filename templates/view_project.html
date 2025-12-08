@@ -88,36 +88,10 @@ function triggerDownload(url, event) {
     
     console.log('Starting download from:', url);
     
-    // Use form submission for more reliable downloads in sandboxed contexts
-    try {
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = url;
-        form.style.display = 'none';
-        
-        // Add CSRF token if present
-        const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (csrfToken) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'csrf_token';
-            input.value = csrfToken.getAttribute('content');
-            form.appendChild(input);
-        }
-        
-        document.body.appendChild(form);
-        form.submit();
-        
-        // Cleanup
-        setTimeout(() => {
-            document.body.removeChild(form);
-        }, 1000);
-        
-        console.log('Download initiated via form submission');
-        
-    } catch (error) {
-        console.error('Download error:', error);
-    }
+    // Open download in new tab to bypass iframe sandbox restrictions
+    window.open(url, '_blank');
+    
+    console.log('Download opened in new tab');
 }
         showToast('Download started!', 'success');
     })
