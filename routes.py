@@ -1642,8 +1642,7 @@ def download_content():
                                download_name=f'{clean_title}.pdf',
                                mimetype='application/pdf')
             else:
-                flash('Error generating PDF', 'danger')
-                return redirect(url_for('start_writing'))
+                return f"Error generating PDF", 500
         
         elif format_type in ['docx', 'txt']:
             # Import locally
@@ -1655,19 +1654,16 @@ def download_content():
                 content_buffer = BytesIO(export_result['data'])
                 mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' if format_type == 'docx' else 'text/plain'
                 return send_file(content_buffer, as_attachment=True,
-                               download_name=f'{clean_title}.{format_type}',
-                               mimetype=mimetype)
+                                download_name=f'{clean_title}.{format_type}',
+                                mimetype=mimetype)
             else:
-                flash('Error generating file', 'danger')
-                return redirect(url_for('start_writing'))
+                return f"Error generating file", 500
         else:
-            flash('Invalid download format', 'danger')
-            return redirect(url_for('start_writing'))
+            return f"Invalid download format: {format_type}", 400
             
     except Exception as e:
         logging.error(f"Download content error: {e}")
-        flash('Error downloading content', 'danger')
-        return redirect(url_for('start_writing'))
+        return f"Error downloading content: {str(e)}", 500
 
 @app.route('/sudowrite/describe', methods=['POST'])
 @require_sukusuku_auth
