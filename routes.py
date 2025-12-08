@@ -1169,9 +1169,16 @@ def download_workspace_project(code, format):
             pdf_buffer = BytesIO(pdf_result['pdf_content'])
             logging.info(f"✅ PDF generated successfully, sending file: {filename}")
             
-            return send_file(pdf_buffer, as_attachment=True, 
+            response = send_file(pdf_buffer, as_attachment=True, 
                             download_name=filename,
                             mimetype='application/pdf')
+            
+            # Set explicit headers to allow downloads in sandboxed contexts
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            
+            return response
         
         elif format in ['docx', 'txt']:
             # Import locally
@@ -1201,9 +1208,16 @@ def download_workspace_project(code, format):
             content_buffer = BytesIO(export_result['data'])
             
             logging.info(f"✅ {format.upper()} generated successfully, sending file: {filename}")
-            return send_file(content_buffer, as_attachment=True,
+            response = send_file(content_buffer, as_attachment=True,
                             download_name=filename,
                             mimetype=mimetype)
+            
+            # Set explicit headers to allow downloads in sandboxed contexts
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            
+            return response
         
         else:
             logging.error(f"❌ Invalid format requested: {format}")
@@ -1669,9 +1683,13 @@ def export_generation(generation_id, format):
             pdf_buffer = BytesIO(pdf_result['pdf_content'])
             logging.info(f"✅ PDF generated successfully, sending file: {filename}")
             
-            return send_file(pdf_buffer, as_attachment=True, 
+            response = send_file(pdf_buffer, as_attachment=True, 
                             download_name=filename,
                             mimetype='application/pdf')
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
         
         elif format in ['docx', 'doc', 'txt']:
             # Map 'doc' to 'docx' for consistency
@@ -1703,9 +1721,13 @@ def export_generation(generation_id, format):
             content_buffer = BytesIO(export_result['data'])
             
             logging.info(f"✅ {export_format.upper()} generated successfully, sending file: {filename}")
-            return send_file(content_buffer, as_attachment=True,
+            response = send_file(content_buffer, as_attachment=True,
                             download_name=filename,
                             mimetype=mimetype)
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            return response
         
         else:
             logging.error(f"❌ Invalid format requested: {format}")
