@@ -293,8 +293,7 @@
             alert('Failed to copy content');
         }
     }
-    // Handle Download Function
-    // Handle Download Function
+    // Handle Download Function - Proper file download with blob handling
     function handleDownload(event, url, filename) {
         event.preventDefault();
 
@@ -302,9 +301,48 @@
             showToast('Starting download...', 'info');
         }
 
-        // Use direct navigation to force browser download handling
-        // This bypasses potential CORS/iframe blob restrictions
-        window.location.href = url;
+        // Fetch the file with proper blob handling
+        fetch(url, {
+            method: 'GET',
+            credentials: 'include', // Include cookies for authentication
+            headers: {
+                'Accept': '*/*'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Download failed: ${response.statusText}`);
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // Create a blob URL and trigger download
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename || 'download';
+            link.style.display = 'none';
+            
+            // Append to body and click
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            }, 100);
+            
+            if (typeof showToast === 'function') {
+                showToast('Download started!', 'success');
+            }
+        })
+        .catch(error => {
+            console.error('Download error:', error);
+            if (typeof showToast === 'function') {
+                showToast('Download failed: ' + error.message, 'danger');
+            }
+        });
     }
 </script>
 {% endblock %}
