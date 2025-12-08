@@ -83,14 +83,15 @@
 
 <script>
 function triggerDownload(url, event) {
-    // Break out of iframe and download in parent window
-    // This bypasses iframe sandbox restrictions completely
-    try {
-        window.top.location.href = url;
-    } catch (e) {
-        // Fallback if cross-origin prevents access to window.top
-        window.location.href = url;
-    }
+    // Create a temporary anchor tag with download attribute
+    // This method works in sandboxed iframes
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '';
+    a.target = '_parent'; // Open in parent frame
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
         showToast('Download started!', 'success');
     })
