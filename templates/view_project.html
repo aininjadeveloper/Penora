@@ -83,15 +83,8 @@
 
 <script>
 function triggerDownload(url, event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    console.log('Starting download from:', url);
-    
-    // Open download in new tab to bypass iframe sandbox restrictions
-    window.open(url, '_blank');
-    
-    console.log('Download opened in new tab');
+    // Simple direct download - works like ChatGPT/Gemini
+    window.location.href = url;
 }
         showToast('Download started!', 'success');
     })

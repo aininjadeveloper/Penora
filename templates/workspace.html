@@ -295,19 +295,8 @@
     }
     // Handle Download Function - Proper file download with blob handling
     function handleDownload(event, url, filename) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (typeof showToast === 'function') {
-            showToast('Opening download...', 'info');
-        }
-
-        // Open download in new tab to bypass iframe sandbox restrictions
-        window.open(url, '_blank');
-        
-        if (typeof showToast === 'function') {
-            showToast('Download opened in new tab!', 'success');
-        }
+        // Simple direct download - works like ChatGPT/Gemini
+        window.location.href = url;
     }
 </script>
 {% endblock %}
