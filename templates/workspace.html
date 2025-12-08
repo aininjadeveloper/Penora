@@ -296,53 +296,46 @@
     // Handle Download Function - Proper file download with blob handling
     function handleDownload(event, url, filename) {
         event.preventDefault();
+        event.stopPropagation();
 
         if (typeof showToast === 'function') {
             showToast('Starting download...', 'info');
         }
 
-        // Fetch the file with proper blob handling
-        fetch(url, {
-            method: 'GET',
-            credentials: 'include', // Include cookies for authentication
-            headers: {
-                'Accept': '*/*'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Download failed: ${response.statusText}`);
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            // Create a blob URL and trigger download
-            const blobUrl = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = filename || 'download';
-            link.style.display = 'none';
+        // Use a form submission for more reliable downloads in sandboxed contexts
+        try {
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = url;
+            form.style.display = 'none';
             
-            // Append to body and click
-            document.body.appendChild(link);
-            link.click();
+            // Add CSRF token if present
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'csrf_token';
+                input.value = csrfToken.getAttribute('content');
+                form.appendChild(input);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
             
             // Cleanup
             setTimeout(() => {
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
-            }, 100);
+                document.body.removeChild(form);
+            }, 1000);
             
             if (typeof showToast === 'function') {
                 showToast('Download started!', 'success');
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Download error:', error);
             if (typeof showToast === 'function') {
                 showToast('Download failed: ' + error.message, 'danger');
             }
-        });
+        }
     }
 </script>
 {% endblock %}

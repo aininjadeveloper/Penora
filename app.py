@@ -142,5 +142,21 @@ def check_sukusuku_auth():
         logging.debug("👤 Auth Check: No user authenticated")
     g.user = user_data
 
+# Add response headers for download compatibility
+@app.after_request
+def add_download_headers(response):
+    """Add headers to enable downloads in sandboxed contexts"""
+    # Allow downloads to work in sandboxed iframes/contexts
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Resource-Policy'] = 'cross-origin'
+    
+    # Ensure Content-Disposition is properly set for file downloads
+    if response.content_type and ('pdf' in response.content_type or 'word' in response.content_type or 'text' in response.content_type):
+        if 'Content-Disposition' not in response.headers:
+            response.headers['Content-Disposition'] = 'attachment'
+    
+    return response
+
 # Import routes
 import routes  # noqa: F401
