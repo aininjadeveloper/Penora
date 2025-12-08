@@ -1613,6 +1613,108 @@ def cross_app_auth():
             'error': 'Authentication error'
         }), 500
 
+@app.route('/export/<generation_id>/<format>')
+@require_sukusuku_auth
+def export_generation(generation_id, format):
+    """Export a specific generation in the requested format"""
+    user_data = g.user
+    
+    if not user_data:
+        logging.error("❌ EXPORT FAILED: User not authenticated")
+        return "Error: User not authenticated", 401
+    
+    logging.info(f"📥 EXPORT REQUEST: User {user_data.get('user_id')} requesting {format} for generation {generation_id}")
+    
+    try:
+        # Get the generation from database
+        generation = Generation.query.filter_by(
+            id=generation_id,
+            user_id=user_data.get('user_id')
+        ).first()
+        
+        if not generation:
+            logging.error(f"❌ EXPORT FAILED: Generation {generation_id} not found")
+            return "Error: Generation not found", 404
+        
+        # Get content to export
+        content_to_export = generation.content or ""
+        if not content_to_export:
+            content_to_export = " "  # Empty space to prevent errors
+        
+        title = generation.title or f"Generation_{generation_id}"
+        
+        logging.info(f"📄 Content length: {len(content_to_export)} chars")
+        
+        if format == 'pdf':
+            # Generate PDF
+            from pdf_service import pdf_service
+            
+            logging.info("🔄 Generating PDF...")
+            pdf_result = pdf_service.generate_pdf(
+                title=title,
+                content=content_to_export
+            )
+            
+            if not pdf_result.get('success'):
+                error_msg = pdf_result.get('error', 'Unknown error')
+                logging.error(f"❌ PDF GENERATION FAILED: {error_msg}")
+                return f"Error generating PDF: {error_msg}", 500
+            
+            # Sanitize filename
+            import re
+            safe_title = re.sub(r'[^a-zA-Z0-9_\-]', '_', title[:20])
+            filename = f'{generation_id}_{safe_title}.pdf'
+            
+            from io import BytesIO
+            pdf_buffer = BytesIO(pdf_result['pdf_content'])
+            logging.info(f"✅ PDF generated successfully, sending file: {filename}")
+            
+            return send_file(pdf_buffer, as_attachment=True, 
+                            download_name=filename,
+                            mimetype='application/pdf')
+        
+        elif format in ['docx', 'doc', 'txt']:
+            # Map 'doc' to 'docx' for consistency
+            export_format = 'docx' if format == 'doc' else format
+            
+            # Generate DOC or TXT
+            from export_service import export_service
+            
+            logging.info(f"🔄 Generating {export_format.upper()}...")
+            export_result = export_service.export_content(
+                content_to_export, 
+                export_format, 
+                title=title
+            )
+            
+            if not export_result.get('success'):
+                error_msg = export_result.get('error', 'Unknown error')
+                logging.error(f"❌ {export_format.upper()} GENERATION FAILED: {error_msg}")
+                return f"Error generating {export_format}: {error_msg}", 500
+            
+            # Sanitize filename
+            import re
+            safe_title = re.sub(r'[^a-zA-Z0-9_\-]', '_', title[:20])
+            filename = f'{generation_id}_{safe_title}.{export_format}'
+            
+            mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' if export_format == 'docx' else 'text/plain'
+            
+            from io import BytesIO
+            content_buffer = BytesIO(export_result['data'])
+            
+            logging.info(f"✅ {export_format.upper()} generated successfully, sending file: {filename}")
+            return send_file(content_buffer, as_attachment=True,
+                            download_name=filename,
+                            mimetype=mimetype)
+        
+        else:
+            logging.error(f"❌ Invalid format requested: {format}")
+            return f"Error: Invalid format {format}", 400
+            
+    except Exception as e:
+        logging.exception(f"🔥 CRITICAL EXPORT ERROR: {str(e)}")
+        return f"Server Error during export: {str(e)}", 500
+
 @app.route('/download-content', methods=['POST'])
 @require_sukusuku_auth
 def download_content():
