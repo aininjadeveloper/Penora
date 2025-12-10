@@ -116,8 +116,9 @@
                                 </div>
 
                                 <form action="{{ url_for('delete_workspace_project', code=project.code) }}"
-                                    method="POST" class="d-inline ms-2" onsubmit="return confirmDelete(event, '{{ project.title }}');">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    method="POST" class="d-inline ms-2">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+                                        onclick="if(confirm('Are you sure you want to delete \"{{ project.title }}\"?\n\nThis action cannot be undone.')) { this.closest('form').submit(); }">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -302,15 +303,6 @@
             // Popup blocked - show message
             alert('Please allow popups for downloads to work. Then try again.');
         }
-    }
-
-    // Confirm delete with custom dialog
-    function confirmDelete(event, projectTitle) {
-        event.preventDefault();
-        if (confirm(`Are you sure you want to delete "${projectTitle}"?\n\nThis action cannot be undone.`)) {
-            event.target.submit();
-        }
-        return false;
     }
 </script>
 {% endblock %}
