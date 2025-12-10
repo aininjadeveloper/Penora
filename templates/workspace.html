@@ -115,10 +115,10 @@
                                     </ul>
                                 </div>
 
-                                <form action="{{ url_for('delete_workspace_project', code=project.code) }}"
+                                <form id="delete-form-{{ project.code }}" action="{{ url_for('delete_workspace_project', code=project.code) }}"
                                     method="POST" class="d-inline ms-2">
                                     <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
-                                        onclick="if(confirm('Are you sure you want to delete \"{{ project.title }}\"?\n\nThis action cannot be undone.')) { this.closest('form').submit(); }">
+                                        onclick="deleteProject('{{ project.code }}', '{{ project.title }}')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -302,6 +302,26 @@
         if (!downloadWindow) {
             // Popup blocked - show message
             alert('Please allow popups for downloads to work. Then try again.');
+        }
+    }
+
+    // Delete project with confirmation
+    function deleteProject(projectCode, projectTitle) {
+        console.log('Delete button clicked for:', projectCode, projectTitle);
+        
+        const message = 'Are you sure you want to delete "' + projectTitle + '"?\n\nThis action cannot be undone.';
+        
+        if (confirm(message)) {
+            console.log('User confirmed deletion, submitting form...');
+            const form = document.getElementById('delete-form-' + projectCode);
+            if (form) {
+                form.submit();
+            } else {
+                console.error('Form not found:', 'delete-form-' + projectCode);
+                alert('Error: Could not find delete form. Please refresh the page and try again.');
+            }
+        } else {
+            console.log('User cancelled deletion');
         }
     }
 </script>
