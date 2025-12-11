@@ -15,7 +15,10 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <small class="text-muted">Credits: {{ credits }}</small>
+                        <small class="text-muted">Credits: <span id="credits-display" class="text-success">{{ credits }}</span></small>
+                        <button class="btn btn-sm btn-link p-0 ms-2" onclick="refreshCredits()" title="Refresh credits">
+                            <i class="fas fa-sync-alt" id="refresh-icon"></i>
+                        </button>
                     </div>
 
                     {% if workspace_projects %}
@@ -207,21 +210,21 @@
 
                     {% if results %}
                     {% for result in results %}
-                    <div class="result-card mb-3 p-3 bg-secondary rounded">
+                    <div class="result-card mb-3 p-3 bg-dark border border-secondary rounded">
                         <div class="d-flex justify-content-between mb-2">
-                            <small class="text-muted">{{ result.type|title }} Tool</small>
-                            <small class="text-muted">{{ result.model_used }}</small>
+                            <small class="text-white"><strong>{{ result.type|title }} Tool</strong></small>
+                            <small class="text-success">{{ result.model_used }}</small>
                         </div>
 
-                        <div class="result-content mb-2" style="max-height: 150px; overflow-y: auto;">
+                        <div class="result-content mb-2 text-light" style="max-height: 200px; overflow-y: auto;">
                             {% if result.type == 'brainstorm' %}
                             <ul class="list-unstyled mb-0">
-                                {% for item in result.content[:5] %}
-                                <li class="small">• {{ item }}</li>
+                                {% for item in result.content %}
+                                <li class="small mb-1" style="color: #e0e0e0;">• {{ item }}</li>
                                 {% endfor %}
                             </ul>
                             {% else %}
-                            <small>{{ result.content[:200] }}...</small>
+                            <small style="color: #e0e0e0;">{{ result.content[:200] }}...</small>
                             {% endif %}
                         </div>
 
@@ -357,4 +360,36 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 </style>
+
+<script>
+    // Refresh credits without page reload
+    async function refreshCredits() {
+        const icon = document.getElementById('refresh-icon');
+        const display = document.getElementById('credits-display');
+        
+        // Spin the icon
+        icon.classList.add('fa-spin');
+        
+        try {
+            const response = await fetch('/api/user-status');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.authenticated && data.credits !== undefined) {
+                    display.textContent = data.credits;
+                    display.classList.add('text-success');
+                }
+            }
+        } catch (error) {
+            console.error('Error refreshing credits:', error);
+        } finally {
+            // Stop spinning
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+            }, 500);
+        }
+    }
+    
+    // Auto-refresh credits every 10 seconds
+    setInterval(refreshCredits, 10000);
+</script>
 {% endblock %}
