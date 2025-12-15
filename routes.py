@@ -1297,7 +1297,12 @@ def sudowrite_write():
     try:
         prompt = request.form.get('main_text', '') + '\n' + request.form.get('direction', '')
         mode = request.form.get('mode', 'auto')
-        variants = int(request.form.get('variants', 3))
+        # Enforce variants between 1 and 3
+        try:
+            variants = int(request.form.get('variants', 3))
+        except (TypeError, ValueError):
+            variants = 3
+        variants = max(1, min(variants, 3))
         temperature = float(request.form.get('temperature', 0.7))
         model_type = 'creative'  # Use creative model for writing
         

@@ -306,7 +306,9 @@ class AIService:
             
             system_msg = f"You are a creative writing assistant. Generate high-quality content with temperature {temperature}."
             
-            for i in range(variants):
+            # Enforce maximum of 3 variants
+            safe_variants = max(1, min(int(variants), 3))
+            for i in range(safe_variants):
                 content = ask_deepinfra(
                     mode_prompts.get(mode, mode_prompts['auto']),
                     system_msg,
